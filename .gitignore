@@ -1,0 +1,8 @@
+# Ignore everything in tmp
+tmp
+
+__pycache__
+.idea
+
+# Ignore mac files
+.DS_Store
