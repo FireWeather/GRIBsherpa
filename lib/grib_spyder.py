@@ -1,4 +1,9 @@
+# Copyright (c) 2013 Matthew Pate
+# [This program is licensed under the "MIT License"]
+# Please see the file COPYING in the source distribution
+# of this software for license terms.
 __author__ = 'MCP'
+
 import urllib.request
 import urllib.error
 import lib.html_parser
@@ -11,7 +16,10 @@ class GribSpyder(object):
     def __init__(self, args):
         self.link_parser = lib.html_parser.GRIBLinkParser()
         self.url = args['url']
-        self.tmp_dir = self.__build_tmp_path()
+	if 'store_loc' in args:
+		self.tmp_dir = args['store_loc']
+	else:
+        	self.tmp_dir = self.__build_tmp_path()
 
     # -opens url in try catch block. Will need to extend catches based on request type
     # -error object can hold server response. There is a dict of common responses (see bookmark)

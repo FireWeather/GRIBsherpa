@@ -1,4 +1,9 @@
+# Copyright (c) 2013 Matthew Pate
+# [This program is licensed under the "MIT License"]
+# Please see the file COPYING in the source distribution
+# of this software for license terms.
 __author__ = 'MCP'
+
 import re
 
 
