@@ -1,5 +1,6 @@
 # Ignore everything in tmp
-tmp
+tmp/*
+!tmp/README.txt
 
 __pycache__
 .idea
