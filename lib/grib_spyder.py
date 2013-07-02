@@ -8,12 +8,13 @@ import urllib.request
 import urllib.error
 import lib.html_parser
 import os
+import re
 
 
 #() holds any inheritance
 class GribSpyder(object):
 
-    partial_grib = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=REPLACE&lev_500_mb=on&lev_750_mb=on&lev_800_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2Fgfs.2013070200%2Fmaster'
+    partial_grib_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_750_mb=on&lev_800_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$%2Fmaster'
 
     def __init__(self, args):
         self.link_parser = lib.html_parser.GRIBLinkParser()
@@ -21,7 +22,6 @@ class GribSpyder(object):
         self.url = self.__default_url(args)
         # optionally initialize storage location
         self.store_loc = self.__default_store_loc(args)
-
 
     # -opens url in try catch block. Will need to extend catches based on request type
     # -error object can hold server response. There is a dict of common responses (see bookmark)
@@ -47,9 +47,14 @@ class GribSpyder(object):
         else:
             print("link to download does not seem to exist.")
 
-
     def download_file_by_url(self, url):
         self.__download(url)
+
+    #this should be passed the exact text that changes in the path
+    def download_parameterized_grib(self, model_run, forecast_hr):
+        path = self.__search_replace_partial_path(model_run, forecast_hr, self.partial_grib_path)
+        self.__download(path)
+
 
 
     # Private -------------------------------------------------------
@@ -88,6 +93,7 @@ class GribSpyder(object):
         store_loc = self.store_loc + self.__get_url_base(url)
         print("attempting to download to tmp: " + url)
         urllib.request.urlretrieve(url, store_loc)
+        print("done")
 
     # gets part of url after last slash
     def __get_url_base(self, url):
@@ -96,6 +102,12 @@ class GribSpyder(object):
     # verifies that a link (text) exists in the html
     def __link_exists_in_html(self, link, html):
         return self.link_parser.grib_link_exists(link, html)
+
+    def __search_replace_partial_path(self, model_run, forecast_hr, partial_path):
+        pp = re.sub('\$MODELRUN\$', model_run, partial_path)
+        pp = re.sub('\$FORECASTHOUR\$', forecast_hr, pp)
+        print("modified 'partial' grib path: " + pp)
+        return pp
 
 
 
