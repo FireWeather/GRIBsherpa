@@ -160,7 +160,14 @@ class GribSpyder(object):
     def __download(self, url):
         store_loc = self.store_loc + self.__get_url_base(url)
         print("attempting to download to tmp: " + url)
-        urllib.request.urlretrieve(url, store_loc)
+        try:
+            urllib.request.urlretrieve(url, store_loc)
+        except urllib.error.URLError as err:
+            print(str(err))
+            return err
+        except urllib.error.HTTPError as err:
+            print(str(err))
+            return err
         print("done")
 
 
