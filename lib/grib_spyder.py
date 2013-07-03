@@ -15,6 +15,7 @@ import re
 class GribSpyder(object):
 
     partial_grib_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_750_mb=on&lev_800_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$%2Fmaster'
+    forecast_hr_format = 'gfs.t$MRHOUR$z.mastergrb2f$FHOUR$'
 
     def __init__(self, args):
         self.link_parser = lib.html_parser.GRIBLinkParser()
@@ -51,16 +52,33 @@ class GribSpyder(object):
         self.__download(url)
 
     #this should be passed the exact text that changes in the path
-    def download_parameterized_grib(self, model_run, forecast_hr):
-        path = self.__search_replace_partial_path(model_run, forecast_hr, self.partial_grib_path)
+    def download_param_grib(self, model_run, forecast_hr):
+        path = self.__search_replace_partial_path(self.partial_grib_path, model_run, forecast_hr)
         self.__download(path)
 
-    # {'gfs.2013070100' : '
-    def download_parameterized_gribs(self, dict):
+    def download_param_gribs_dict(self, dict):
         for key in dict:
             for item in dict[key]:
                 print('attempting to download: ' + key + ' - ' + item)
-                self.download_parameterized_grib(key, item)
+                self.download_param_grib(key, item)
+
+    def download_param_grib_range(self, model_run, fh_start, fh_end, increment):
+        start = int(fh_start)
+        end = int(fh_end)
+        increment = int(increment)
+        # Add in the part of the forecast path related to the model run: gfs.t$$z...
+        partial_path = self.__build_forecast_hr_model(self.forecast_hr_format, model_run[-2:])
+        # Add in the part of the forecast path related to the forecast hour
+        while start < end:
+            # Add in the part of the forecast path related to the forecast hour
+            partial_path = self.__build_forecast_hr_forecast(partial_path, fh_start)
+            # Add the completed partial_path above into the main partial_grib_path along with the model run
+            partial_path = self.__search_replace_partial_path(self.partial_grib_path, model_run, partial_path)
+            self.__download(partial_path)
+            start += increment
+            fh_start = (int(fh_start) + increment)
+            fh_start = str(fh_start)
+
 
 
 
@@ -80,6 +98,13 @@ class GribSpyder(object):
         else:
             print("ERROR in GribSpyder.__build_path_to_tmp: tmp directory not found")
             return None
+
+    # expects '$HOUR$' to be in string, replaces it with 'hour'
+    def __build_forecast_hr_model(self, string, hour):
+        return re.sub('\$MRHOUR\$', hour, string)
+
+    def __build_forecast_hr_forecast(self, string, hour):
+        return re.sub('\$FHOUR\$', hour, string)
 
     def __default_store_loc(self, args):
         if 'store_loc' in args:
@@ -102,6 +127,7 @@ class GribSpyder(object):
         urllib.request.urlretrieve(url, store_loc)
         print("done")
 
+
     # gets part of url after last slash
     def __get_url_base(self, url):
         return url.rsplit('/', 1)[1]
@@ -110,9 +136,10 @@ class GribSpyder(object):
     def __link_exists_in_html(self, link, html):
         return self.link_parser.grib_link_exists(link, html)
 
-    def __search_replace_partial_path(self, model_run, forecast_hr, partial_path):
+    def __search_replace_partial_path(self, partial_path, model_run, forecast_hr=None):
         pp = re.sub('\$MODELRUN\$', model_run, partial_path)
-        pp = re.sub('\$FORECASTHOUR\$', forecast_hr, pp)
+        if forecast_hr:
+            pp = re.sub('\$FORECASTHOUR\$', forecast_hr, pp)
         print("modified 'partial' grib path: " + pp)
         return pp
 
