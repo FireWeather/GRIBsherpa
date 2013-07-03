@@ -1,8 +1,14 @@
+__author__ = 'MCP'
+# --------------------------------------------------------
 # Copyright (c) 2013 Matthew Pate
 # [This program is licensed under the "MIT License"]
 # Please see the file COPYING in the source distribution
 # of this software for license terms.
-__author__ = 'MCP'
+# --------------------------------------------------------
+# GribSpyder is a GRIB specific class that assists with downloading GRIB files.  It can be initialized with a dictionary
+# containing a default url to work from and a default storage location ( {'url' : 'urlpath', 'store_loc' : 'pathToStorage'} ).
+# If these values are not provided the hardcoded class variable for GRIB files and the hardcoded path to the project "tmp"
+# folder will be used as defaults.  See specific methods for any questions you might have.
 
 import urllib.request
 import urllib.error
@@ -11,7 +17,6 @@ import os
 import re
 
 
-#() holds any inheritance
 class GribSpyder(object):
 
 
@@ -28,8 +33,7 @@ class GribSpyder(object):
         self.store_loc = self.__default_store_loc(args)
 
 
-    # -opens url in try catch block. Will need to extend catches based on request type
-    # -error object can hold server response. There is a dict of common responses
+    # Opens url, reads it's contents, converts to string and returns
     def get_html(self, url):
         try:
             response = urllib.request.urlopen(url)
@@ -42,7 +46,7 @@ class GribSpyder(object):
         return str(response.readall())
 
 
-    # Gets html, makes sure link exists, attempts to download it.
+    # Gets html string, makes sure link exists within, attempts to download it.
     def download_file_by_link(self, link):
         html = self.get_html(self.url)
         print("url response type: " + str(type(html)))
@@ -54,20 +58,20 @@ class GribSpyder(object):
             print("link to download does not seem to exist.")
 
 
-    # Straight up downloads the file.  No error checking.
+    # Straight up downloads the file using error checking provided by __download.
     def download_file_by_url(self, url):
         self.__download(url)
 
 
     # Downloads file based on model_run and forecast_hr corresponding EXACTLY to the text that changes in the path.
-    # ex. download_param_grib('gfs.2013070100', 'gfs.t00z.mastergrb2f00')
+    # Example: spyder.download_param_grib('gfs.2013070100', 'gfs.t00z.mastergrb2f00')
     def download_param_grib(self, model_run, forecast_hr):
         path = self.__search_replace_partial_path(self.partial_grib_path, model_run, forecast_hr)
         self.__download(path)
 
 
     # Downloads gribs as specified in a dictionary
-    # ex. download_param_gribs_dict({'gfs.2013070100' : ['gfs.t00z.mastergrb2f00', 'gfs.t00z.mastergrb2f03', etc.]})
+    # Example: spyder.download_param_gribs_dict({'gfs.2013070100' : ['gfs.t00z.mastergrb2f00', 'gfs.t00z.mastergrb2f03', etc.]})
     def download_param_gribs_dict(self, dict):
         for key in dict:
             for item in dict[key]:
@@ -77,7 +81,7 @@ class GribSpyder(object):
 
     # Downloads multiple grib files.
     # model_run_dateHour:  integer describing dateHour (ex. 2013070100)
-    # fh_start:            integer describing the hour to start 00-180 (or greater)
+    # fh_start:            integer describing the hour to start 00, 03, 06, etc. (or greater)
     # fh_end:              integer describing the hour to end
     # increment:           integer describing how to increment the forecast hours being downloaded
     # NOTE: the increment must correspond to an actual increment provided by NOAA
