@@ -8,7 +8,8 @@ __author__ = 'MCP'
 # GribSpyder is a GRIB specific class that assists with downloading GRIB files.  It can be initialized with a dictionary
 # containing a default url to work from and a default storage location ( {'url' : 'urlpath', 'store_loc' : 'pathToStorage'} ).
 # If these values are not provided the hardcoded class variable for GRIB files and the hardcoded path to the project "tmp"
-# folder will be used as defaults.  See specific methods for any questions you might have.
+# folder will be used as defaults.  Note that .gitignore should disregard any files except the README that exist
+# within this directory. See specific methods for any questions you might have.
 
 import urllib.request
 import urllib.error
