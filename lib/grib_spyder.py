@@ -55,6 +55,13 @@ class GribSpyder(object):
         path = self.__search_replace_partial_path(model_run, forecast_hr, self.partial_grib_path)
         self.__download(path)
 
+    # {'gfs.2013070100' : '
+    def download_parameterized_gribs(self, dict):
+        for key in dict:
+            for item in dict[key]:
+                print('attempting to download: ' + key + ' - ' + item)
+                self.download_parameterized_grib(key, item)
+
 
 
     # Private -------------------------------------------------------
