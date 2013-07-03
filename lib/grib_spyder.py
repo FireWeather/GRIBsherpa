@@ -16,6 +16,7 @@ class GribSpyder(object):
 
     partial_grib_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_750_mb=on&lev_800_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$%2Fmaster'
     forecast_hr_format = 'gfs.t$MRHOUR$z.mastergrb2f$FHOUR$'
+    model_run_format = 'gfs.$MRDATE$'
 
     def __init__(self, args):
         self.link_parser = lib.html_parser.GRIBLinkParser()
@@ -62,23 +63,26 @@ class GribSpyder(object):
                 print('attempting to download: ' + key + ' - ' + item)
                 self.download_param_grib(key, item)
 
-    def download_param_grib_range(self, model_run, fh_start, fh_end, increment):
+    def download_param_grib_range(self, model_run_dateHour, fh_start, fh_end, increment):
         start = int(fh_start)
         end = int(fh_end)
-        increment = int(increment)
+        inc = int(increment)
+        mr = str(model_run_dateHour)
+        model_run = self.__build_model_run(model_run_dateHour)
+        print("Downloading GRIB range for model run: " + str(model_run) + "\n" +
+              "............start = " + str(start) + "\n" +
+              "............end = " + str(end) + "\n" +
+              "............increment = " + str(inc))
         # Add in the part of the forecast path related to the model run: gfs.t$$z...
-        partial_path = self.__build_forecast_hr_model(self.forecast_hr_format, model_run[-2:])
+        forecast_hour = self.__add_to_forecast_hr('\$MRHOUR\$', self.forecast_hr_format, mr[-2:])
         # Add in the part of the forecast path related to the forecast hour
         while start < end:
             # Add in the part of the forecast path related to the forecast hour
-            partial_path = self.__build_forecast_hr_forecast(partial_path, fh_start)
+            one = self.__add_to_forecast_hr('\$FHOUR\$', forecast_hour, start)
             # Add the completed partial_path above into the main partial_grib_path along with the model run
-            partial_path = self.__search_replace_partial_path(self.partial_grib_path, model_run, partial_path)
-            self.__download(partial_path)
-            start += increment
-            fh_start = (int(fh_start) + increment)
-            fh_start = str(fh_start)
-
+            path = self.__search_replace_partial_path(self.partial_grib_path, model_run, one)
+            self.__download(path)
+            start += inc
 
 
 
@@ -100,11 +104,31 @@ class GribSpyder(object):
             return None
 
     # expects '$HOUR$' to be in string, replaces it with 'hour'
-    def __build_forecast_hr_model(self, string, hour):
-        return re.sub('\$MRHOUR\$', hour, string)
+    def __add_to_forecast_hr(self, regex, string, hour):
+        hr = hour
+        #perform checks to avoid truncating leading 0
+        if type(hour) == int:
+            if hour == 0:
+                hr = '00'
+            elif hour < 10:
+                hr = '0' + str(hour)
+            else:
+                hr = str(hour)
+        return re.sub(regex, hr, string)
 
-    def __build_forecast_hr_forecast(self, string, hour):
+    def __add_forecast_hr_forecast(self, string, hour):
+        hr = hour
+        #perform checks to avoid truncating leading 0
+        if type(hour) == int:
+            if hour == 0:
+                hr = '00'
+
+        string = str(string)
+        hour = str(hour)
         return re.sub('\$FHOUR\$', hour, string)
+
+    def __build_model_run(self, dateHour):
+        return re.sub('\$MRDATE\$', str(dateHour), self.model_run_format)
 
     def __default_store_loc(self, args):
         if 'store_loc' in args:
@@ -136,12 +160,14 @@ class GribSpyder(object):
     def __link_exists_in_html(self, link, html):
         return self.link_parser.grib_link_exists(link, html)
 
-    def __search_replace_partial_path(self, partial_path, model_run, forecast_hr=None):
-        pp = re.sub('\$MODELRUN\$', model_run, partial_path)
+    def __search_replace_partial_path(self, partial_path, model_run=None, forecast_hr=None):
+        p = ''
+        if model_run:
+            p = re.sub('\$MODELRUN\$', model_run, partial_path)
         if forecast_hr:
-            pp = re.sub('\$FORECASTHOUR\$', forecast_hr, pp)
-        print("modified 'partial' grib path: " + pp)
-        return pp
+            p = re.sub('\$FORECASTHOUR\$', forecast_hr, p)
+        print("modified 'partial' grib path: " + p)
+        return p
 
 
 
