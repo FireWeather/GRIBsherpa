@@ -20,9 +20,14 @@ import re
 
 class GribSpyder(object):
 
+    # 0.5 degree hyperlink
+    # partial_grib_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$%2Fmaster'
+    # forecast_hr_format = 'gfs.t$MRHOUR$z.mastergrb2f$FHOUR$'
 
-    partial_grib_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_750_mb=on&lev_800_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$%2Fmaster'
-    forecast_hr_format = 'gfs.t$MRHOUR$z.mastergrb2f$FHOUR$'
+    # 1.0 degree hyperlink
+    partial_grib_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&lev_surface=on&all_var=on&leftlon=-133&rightlon=-95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$' # changes for 1.0 degree resolution data
+    forecast_hr_format = 'gfs.t$MRHOUR$z.pgrbf$FHOUR$.grib2'
+
     model_run_format = 'gfs.$MRDATE$'
 
 
