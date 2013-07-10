@@ -103,7 +103,7 @@ class GribSpyder(object):
               "............increment = " + str(inc))
         # Add in the part of the forecast path related to the model run: gfs.t$$z...
         forecast_hour = self.__add_to_forecast_hr('\$MRHOUR\$', self.forecast_hr_format, mr[-2:])
-        while start < end:
+        while start <= end:
             # Add in the part of the forecast path related to the forecast hour
             one = self.__add_to_forecast_hr('\$FHOUR\$', forecast_hour, start)
             # Add the completed partial_path above into the main partial_grib_path along with the model run
