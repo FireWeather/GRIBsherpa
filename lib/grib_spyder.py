@@ -160,12 +160,12 @@ class GribSpyder(object):
 
 
     def __default_args(self, type, args):
-        if args is None:
-            return None
-        elif type in args:
-            return args[type]
-        else:
-            return None
+        if args is None or not args.contains(type):
+            if type == "store_loc":
+                return self.__build_path_to_tmp()
+            else:
+                return None
+        return args[type]
 
 
     # 1. expects there to be a temp directory
@@ -173,7 +173,7 @@ class GribSpyder(object):
     # 3. attempts to download file
     def __download(self, url, file_name=None):
         store_loc = ""
-        if file_name:
+        if file_name is not None:
             store_loc = self.store_loc + file_name
         else:
             store_loc = self.store_loc + self.__get_url_base(url)
