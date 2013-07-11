@@ -33,13 +33,11 @@ class GribSpyder(object):
 
     def __init__(self, args=None):
         self.link_parser = lib.html_parser.GRIBLinkParser()
-        #optionally initialize url
         self.url = self.__default_args("url", args)
-        # optionally initialize storage location
         self.store_loc = self.__default_args("store_loc", args)
 
 
-    # Opens url, reads it's contents, converts to string and returns
+    # Opens url, reads it's contents, converts to string and returns (or returns error)
     def get_html(self, url):
         try:
             response = urllib.request.urlopen(url)
@@ -52,8 +50,10 @@ class GribSpyder(object):
         return str(response.readall())
 
 
-    # Gets html string, makes sure link exists within, attempts to download it. #this only works if you've
-    # specified a url for the class (self.url)
+    # Gets html string, makes sure link exists within, attempts to download it.
+    # This only works if you've specified a url for the class (self.url) where all the
+    # downloadable files are.
+    # Example Usage: mySpyder.download_file_by_link('gfs.t12z.goessimpgrb2f00.1p0deg'
     def download_file_by_link(self, link):
         html = self.get_html(self.url)
         print("url response type: " + str(type(html)))
@@ -65,19 +65,21 @@ class GribSpyder(object):
             print("link to download does not seem to exist.")
 
 
-    # Straight up downloads the file using error checking provided by __download.
+    # Downloads using the full url passed in (direct path to file).
     def download_file_by_url(self, url):
         self.__download(url)
 
 
-    # Downloads file based on model_run and forecast_hr corresponding EXACTLY to the text that changes in the path.
-    # Example: spyder.download_param_grib('gfs.2013070100', 'gfs.t00z.mastergrb2f00')
+    # Uses class variables, substitutes in the model_run and forecast_hr (using regex),
+    # and tries to download the files that the resulting full path specifies.  Note that
+    # model_run and forecast_hr should specify the exact text to replace in the class variables.
+    # Example Usage: mySpyder.download_param_grib('gfs.2013070100', 'gfs.t00z.mastergrb2f00')
     def download_param_grib(self, model_run, forecast_hr):
         path = self.__search_replace_partial_path(self.partial_grib_path, model_run, forecast_hr)
         self.__download(path)
 
 
-    # Downloads gribs as specified in a dictionary
+    # Downloads gribs as specified in a dictionary. Note sure of how useful this is. May be worth deleting.
     # Example: spyder.download_param_gribs_dict({'gfs.2013070100' : ['gfs.t00z.mastergrb2f00', 'gfs.t00z.mastergrb2f03', etc.]})
     def download_param_gribs_dict(self, dict):
         for key in dict:
@@ -86,12 +88,14 @@ class GribSpyder(object):
                 self.download_param_grib(key, item)
 
 
-    # Downloads multiple grib files.
-    # model_run_dateHour:  integer describing dateHour (ex. 2013070100)
+    # Downloads multiple grib files as specified by the parameters.
+    # model_run_dateHour:  integer describing dateHour (YYYYMMDDHH, ex. 2013070100)
     # fh_start:            integer describing the hour to start 00, 03, 06, etc. (or greater)
-    # fh_end:              integer describing the hour to end
+    # fh_end:              integer describing the hour to end (inclusive)
     # increment:           integer describing how to increment the forecast hours being downloaded
-    # NOTE: the increment must correspond to an actual increment provided by NOAA
+    # NOTE: the increment must correspond to an actual increment provided by NOAA, otherwise
+    # errors will be thrown. If this happens the method will continue trying to downloading
+    # any files that it find matches for until fh_end has been reached.
     def download_param_grib_range(self, model_run_dateHour, fh_start, fh_end, increment):
         start = int(fh_start)
         end = int(fh_end)
@@ -102,14 +106,17 @@ class GribSpyder(object):
               "............start = " + str(start) + "\n" +
               "............end = " + str(end) + "\n" +
               "............increment = " + str(inc))
-        # Add in the part of the forecast path related to the model run: gfs.t$$z...
+        # ----------- Build the full url to download in 3 steps ----------
+        # 1. Add model run hour part to the forecast path: gfs.t$$z... This stays the same for below iterations.
         forecast_hour = self.__add_to_forecast_hr('\$MRHOUR\$', self.forecast_hr_format, mr[-2:])
         while start <= end:
-            # Add in the part of the forecast path related to the forecast hour
-            one = self.__add_to_forecast_hr('\$FHOUR\$', forecast_hour, start)
-            # Add the completed partial_path above into the main partial_grib_path along with the model run
-            path = self.__search_replace_partial_path(self.partial_grib_path, model_run, one)
-            self.__download(path)
+            # 2. Add forecast hour to the forecast path. This iterates from fh_start to fh_end in increments.
+            tmp = self.__add_to_forecast_hr('\$FHOUR\$', forecast_hour, start)
+            # 3. Add the path created above to the main partial_grib_path along with the model run.
+            path = self.__search_replace_partial_path(self.partial_grib_path, model_run, tmp)
+            # create name for file: YYYMMDDHH_FHHH.grib
+            file_name = str(model_run_dateHour) + "_" + self.__three_hr_fh(start) + ".grib"
+            self.__download(path, file_name)
             start += inc
 
 
@@ -146,6 +153,7 @@ class GribSpyder(object):
                 hr = str(hour)
         return re.sub(regex, hr, string)
 
+
     # turns var into gfs.
     def __build_model_run(self, dateHour):
         return re.sub('\$MRDATE\$', str(dateHour), self.model_run_format)
@@ -163,8 +171,12 @@ class GribSpyder(object):
     # 1. expects there to be a temp directory
     # 2. builds storage file path based on tmp path and base of url being downloaded
     # 3. attempts to download file
-    def __download(self, url):
-        store_loc = self.store_loc + self.__get_url_base(url)
+    def __download(self, url, file_name=None):
+        store_loc = ""
+        if file_name:
+            store_loc = self.store_loc + file_name
+        else:
+            store_loc = self.store_loc + self.__get_url_base(url)
         print("attempting to download to tmp: " + url)
         try:
             urllib.request.urlretrieve(url, store_loc)
@@ -196,4 +208,13 @@ class GribSpyder(object):
         return p
 
 
+    def __three_hr_fh(self, fh):
+        if fh == 0:
+            return "000"
+        elif fh < 10:
+            return "00" + str(fh)
+        elif fh < 100:
+            return "0" + str(fh)
+        else:
+            return str(fh)
 
