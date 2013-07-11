@@ -1,6 +1,6 @@
 __author__ = 'MCP'
 # --------------------------------------------------------
-# Copyright (c) 2013 Matthew Pate
+# Copyright (c) 2013 Matthew Pate and Daniel Catalano
 # [This program is licensed under the "MIT License"]
 # Please see the file COPYING in the source distribution
 # of this software for license terms.
@@ -52,7 +52,8 @@ class GribSpyder(object):
         return str(response.readall())
 
 
-    # Gets html string, makes sure link exists within, attempts to download it.
+    # Gets html string, makes sure link exists within, attempts to download it. #this only works if you've
+    # specified a url for the class (self.url)
     def download_file_by_link(self, link):
         html = self.get_html(self.url)
         print("url response type: " + str(type(html)))
