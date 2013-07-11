@@ -31,12 +31,12 @@ class GribSpyder(object):
     model_run_format = 'gfs.$MRDATE$'
 
 
-    def __init__(self, args):
+    def __init__(self, args=None):
         self.link_parser = lib.html_parser.GRIBLinkParser()
         #optionally initialize url
-        self.url = self.__default_url(args)
+        self.url = self.__default_args("url", args)
         # optionally initialize storage location
-        self.store_loc = self.__default_store_loc(args)
+        self.store_loc = self.__default_args("store_loc", args)
 
 
     # Opens url, reads it's contents, converts to string and returns
@@ -145,21 +145,16 @@ class GribSpyder(object):
                 hr = str(hour)
         return re.sub(regex, hr, string)
 
-
+    # turns var into gfs.
     def __build_model_run(self, dateHour):
         return re.sub('\$MRDATE\$', str(dateHour), self.model_run_format)
 
 
-    def __default_store_loc(self, args):
-        if 'store_loc' in args:
-            return args['store_loc']
-        else:
-            return self.__build_path_to_tmp()
-
-
-    def __default_url(self, args):
-        if 'url' in args:
-            return args['url']
+    def __default_args(self, type, args):
+        if args is None:
+            return None
+        elif type in args:
+            return args[type]
         else:
             return None
 
