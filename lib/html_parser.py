@@ -9,14 +9,17 @@ __author__ = 'MCP'
 import re
 
 
-# contains basic parsing functionality, will be extended
-class GRIBLinkParser:
+## The GribHtmlParser class contains functionality to parse html. The class is
+# thin right now but if/when the GribSpyder starts actually crawling for weather
+# data this class will hold much more logic.
+class GribHtmlParser:
 
     def __init__(self):
         pass
 
-    # appends href brackets to search for link text
-    def grib_link_exists(self, link, html):
+    ## Converts link text to html equivalent (text with brackets) and
+    # searches html for match
+    def link_exists_in_html(self, link, html):
         regex = self.__grib_link_regex(link)
         match = regex.search(html)
         if match is None:
