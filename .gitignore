@@ -1,4 +1,4 @@
-# Ignore everything in tmp
+# Ignore everything in tmp except README
 tmp/*
 !tmp/README.txt
 
@@ -7,3 +7,7 @@ __pycache__
 
 # Ignore mac files
 .DS_Store
+
+# Ignore the .vagrant folder in .vmconfig folder
+.vmconfig/.vagrant/*
+
