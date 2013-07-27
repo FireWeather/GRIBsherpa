@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [[ $UID -ne 0 ]]; then
+  echo "$0 must be run as root"
+  exit 1
+fi
+
 #change hosts and hostname
 #sed "s/ubuntu/owyhee/" -i /etc/hosts
 #sed "s/ubuntu/owyhee/" -i /etc/hostname

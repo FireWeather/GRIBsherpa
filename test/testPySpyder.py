@@ -9,4 +9,4 @@ path.append('..')
 from lib.grib_spyder import GribSpyder
 
 spider = GribSpyder()
-spider.download_param_grib_range(2013071318, 00, 12, 12)
+spider.download_param_grib_range('gfs', 2013072700, 00, 240, 12)
