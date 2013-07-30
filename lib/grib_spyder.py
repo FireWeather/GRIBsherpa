@@ -85,11 +85,7 @@ class GribSpyder(object):
               "............increment = " + str(inc))
         while start <= end:
             to_download = self.url_parser.build_download_url(model_type, model_run_dateHour, start)
-            file_name = str(model_run_dateHour)[:4] + "_" +   #yyyy
-                        str(model_run_dateHour)[4:6] + "_" +  #mm
-                        str(model_run_dateHour)[6:8] + "_" +  #dd
-                        str(model_run_dateHour)[8:] + "_" +   #hh
-                        self.__three_hr_fh(start) + ".grib"   #fh
+            file_name = str(model_run_dateHour)[:4] + "_" + str(model_run_dateHour)[4:6] + "_" + str(model_run_dateHour)[6:8] + "_" + str(model_run_dateHour)[8:] + "_" + self.__three_hr_fh(start) + ".grib"   
             self.__download(to_download, file_name)
             start += inc
 
@@ -166,6 +162,9 @@ class UrlParser(object):
     # gfs_fh_format = 'gfs.t$MRHOUR$z.mastergrb2f$FHOUR$'
 
     # ---- 1.0 degree hyperlink ----
+    # This is used for testing.
+    #partial_gfs_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs.pl?file=$FORECASTHOUR$&lev_850_mb=on&all_var=on&subregion=leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$'
+
     partial_gfs_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&lev_surface=on&all_var=on&leftlon=-133&rightlon=-95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$'
     gfs_fh_format = 'gfs.t$MRHOUR$z.pgrbf$FHOUR$.grib2'
     gfs_mr_format = 'gfs.$MRDATE$'
@@ -173,6 +172,10 @@ class UrlParser(object):
     partial_nam_path = 'http://nomads.ncep.noaa.gov/cgi-bin/filter_nam_na.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$'
     nam_fh_format = 'nam.t$MRHOUR$z.awip32$FHOUR$.tm00.grib2'
     nam_mr_format = 'nam.$MRDATE$'
+
+    #filters = { "all levels" : "all_levels=on",
+    #            "all variables" : "all_var=on",
+    #            "900 mb" : "lev_900_mb=on" }
 
     ## Uses mr_type and dateHour to build the corresponding model run
     def build_model_run(self, mr_type, date_hour):
