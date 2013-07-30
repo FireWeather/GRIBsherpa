@@ -1,6 +1,7 @@
 # Ignore everything in tmp except README
 tmp/*
 !tmp/README.txt
+*.swp
 
 __pycache__
 .idea
