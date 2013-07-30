@@ -85,7 +85,11 @@ class GribSpyder(object):
               "............increment = " + str(inc))
         while start <= end:
             to_download = self.url_parser.build_download_url(model_type, model_run_dateHour, start)
-            file_name = str(model_run_dateHour) + "_" + self.__three_hr_fh(start) + ".grib"
+            file_name = str(model_run_dateHour)[:4] + "_" +   #yyyy
+                        str(model_run_dateHour)[4:6] + "_" +  #mm
+                        str(model_run_dateHour)[6:8] + "_" +  #dd
+                        str(model_run_dateHour)[8:] + "_" +   #hh
+                        self.__three_hr_fh(start) + ".grib"   #fh
             self.__download(to_download, file_name)
             start += inc
 

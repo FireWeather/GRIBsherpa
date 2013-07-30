@@ -1,5 +1,15 @@
+__author__ = 'MCP'
+# --------------------------------------------------------
+# Copyright (c) 2013 Matthew Pate and Daniel Catalano
+# [This program is licensed under the "MIT License"]
+# Please see the file COPYING in the source distribution
+# of this software for license terms.
+# --------------------------------------------------------
+
 import pygrib
 import os
+
+
 class Blender(object):
 
     def __init__(self, path=None):
