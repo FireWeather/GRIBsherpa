@@ -173,9 +173,17 @@ class UrlParser(object):
     nam_fh_format = 'nam.t$MRHOUR$z.awip32$FHOUR$.tm00.grib2'
     nam_mr_format = 'nam.$MRDATE$'
 
-    #filters = { "all levels" : "all_levels=on",
-    #            "all variables" : "all_var=on",
-    #            "900 mb" : "lev_900_mb=on" }
+    #lev_filters = { "all levels" : "all_levels=on",
+    #                "500 mb" : "lev_500_mb=on",
+    #                "500 mb" : "lev_700_mb=on",
+    #                "750 mb" : "lev_750_mb=on",
+    #                "800 mb" : "lev_800_mb=on",
+    #                "850 mb" : "lev_850_mb=on",
+    #                "1000 mb" : "lev_1000_mb=on" }
+                     
+
+    #var_filters = { "all variables" : "all_var=on" }
+
 
     ## Uses mr_type and dateHour to build the corresponding model run
     def build_model_run(self, mr_type, date_hour):
