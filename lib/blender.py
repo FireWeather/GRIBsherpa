@@ -7,10 +7,17 @@ __author__ = 'MCP'
 # --------------------------------------------------------
 
 import pygrib
+import psycopg2
 import os
 
 
+## This class wraps pygrib functionality and breaks data down in a way that can then be stored in the database.
+# Typical workflow includes:
+# 1. Search a grib file for a message(s) with "getMessage()"
+# 2. Retrieve fields from that message either by grabbing all of them OR by getting those specified in a list
+# 3. Store in database
 class Blender(object):
+
 
     ## "Message of Interest" These are the messages within the grib that we care about.
     # These will each have many key/value pairs. The message format matches exactly the grib format.
@@ -18,26 +25,6 @@ class Blender(object):
     # MP: Not finding -- precipital water -- its listing below is a best guess at the Message name/format.
     MOI = [ 'Best (4-layer) lifted index', 'Convective available potential energy', 'Geopotential Height', 'Precipital water', 'Surface lifted index', 'Temperature', 'Realative humidity', 'Surface pressure',  'U component of wind', 'V component of wind', 'Wind speed' ]
 
-    ## @param Path to the grib file (optional)
-    # def __init__(self, path=None):
-    #     self._grib = path
-    #
-    # @property
-    # def grib(self):
-    #     return self._grib
-    #
-    # @grib.setter
-    # def grib(self, path):
-    #     if path is None:
-    #         self._grib = None
-    #         return
-    #     else:
-    #         if os.path.isfile(path):
-    #             self._grib = path
-    #             return
-    #         else:
-    #             print("Error: {} is not a file.".format(path))
-    #             return
 
     ## Gets the msg from grib.
     # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
@@ -49,55 +36,31 @@ class Blender(object):
             print(err)
             return err
         try:
-            msg = f.select(name="{msg}".format(msg))
+            msgs = f.select(name="{0}".format(msg))
         except ValueError as err:
             print(err)
             return err
-        return msg
+        return msgs
 
-    def getMessageDetails(self, msg):
-        pass
 
-    def messages(self):
-        if self.grib is None:
-            print("No grib file is specified so nothing to show.")
+    ## Breaks down msg (pygrib mesage) into a dictionary. Will return all fields
+    # if list is not specified else will try to return fields specified in list.
+    # @param msg pygrib message
+    # @param list fields you want data for
+    # @return Dictionary of data for message
+    def getMessageFields(self, msg, list=None):
+        dict = {}
+        if list is None:
+            for key in msg.keys():
+                val = msg[key]
+                dict[key] = val
         else:
-            try:
-                gf = pygrib.open(self._grib)
-            except Exception as error:
-                print("Error type: {0} when opening gribfile".format(error))
-                return
-            # reset incase calling again
-            gf.seek(0)
-            for item in gf:
-                print(item.name)
-            #pygrib.close(self.grib)
-
-    def message_details(self, message_name):
-        if self.grib is None:
-            print("No grib file is specified so nothing to show.")
-        else:
-            gf = self.__open(self._grib)
-            gf.seek(0)
-            try:
-                msg = gf.select(name="{0}".format(message_name))
-            except Exception as error:
-                print("Error during select: {0}".format(error))
-                return
-            for i in msg:
-                print(i)
+            for key in msg.keys():
+                for item in list:
+                    if key == item:
+                        dict[key] = msg[key]
+        return dict
 
 
 
-    # ------------------------- Private ----------------------------
-    
-    ## Opens the grib file passed in
-    # @return Returns open pygrib file
-    def __open(self, grib):
-        try:
-            gf = pygrib.open(grib)
-        except Exception as error:
-            print("Error type: {0} when opening gribfile".format(error))
-            return
-        return gf
 

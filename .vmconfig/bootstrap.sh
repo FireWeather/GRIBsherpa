@@ -32,7 +32,7 @@ usermod -a -G sudo mansherpa
 
 apt-get update
 apt-get upgrade -y
-apt-get install -y git postgresql-9.1 python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python-psycopg2 
+apt-get install -y git postgresql-9.1 python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2
 
 GRIB_VERSION="1.10.4"
 GRIB_LOCATION="grib_api-$GRIB_VERSION"
