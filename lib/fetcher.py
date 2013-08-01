@@ -13,16 +13,16 @@ import os
 import re
 
 
-## GribSpyder is a GRIB specific class that assists with downloading GRIB files.
+## Fetcher is a GRIB specific class that assists with downloading GRIB files.
 # Initialization variables are optional and if used should be passed in using a dictionary with
 # keys specifying the variable name that you want to initialize.
 #
-# GribSpyder expects the "tmp" project directory to exist and will download files to that location
+# Fetcher expects the "tmp" project directory to exist and will download files to that location
 # unless a different location ("store_loc") is specified at initialization.
 # This class has dependencies on two other classes:
 # 1. GribHtmlParser (html_parser.py)
 # 2. UrlParser (defined below)
-class GribSpyder(object):
+class Fetcher(object):
 
 
     ## @param args A dictionary of initialization params
@@ -105,7 +105,7 @@ class GribSpyder(object):
             print("found tmp for storage: " + tmp_dir)
             return tmp_dir
         else:
-            print("ERROR in GribSpyder.__build_path_to_tmp: tmp directory not found")
+            print("ERROR in Fetcher.__build_path_to_tmp: tmp directory not found")
             return None
 
 
@@ -175,7 +175,7 @@ class UrlParser(object):
 
     #lev_filters = { "all levels" : "all_levels=on",
     #                "500 mb" : "lev_500_mb=on",
-    #                "500 mb" : "lev_700_mb=on",
+    #                "700    mb" : "lev_700_mb=on",
     #                "750 mb" : "lev_750_mb=on",
     #                "800 mb" : "lev_800_mb=on",
     #                "850 mb" : "lev_850_mb=on",

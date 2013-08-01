@@ -10,7 +10,7 @@ import re
 
 
 ## The GribHtmlParser class contains functionality to parse html. The class is
-# thin right now but if/when the GribSpyder starts actually crawling for weather
+# thin right now but if/when the Fetcher starts actually crawling for weather
 # data this class will hold much more logic.
 class GribHtmlParser:
 

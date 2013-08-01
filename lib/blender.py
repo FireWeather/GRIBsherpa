@@ -18,25 +18,45 @@ class Blender(object):
     # MP: Not finding -- precipital water -- its listing below is a best guess at the Message name/format.
     MOI = [ 'Best (4-layer) lifted index', 'Convective available potential energy', 'Geopotential Height', 'Precipital water', 'Surface lifted index', 'Temperature', 'Realative humidity', 'Surface pressure',  'U component of wind', 'V component of wind', 'Wind speed' ]
 
-    def __init__(self, path=None):
-        self._grib = path
+    ## @param Path to the grib file (optional)
+    # def __init__(self, path=None):
+    #     self._grib = path
+    #
+    # @property
+    # def grib(self):
+    #     return self._grib
+    #
+    # @grib.setter
+    # def grib(self, path):
+    #     if path is None:
+    #         self._grib = None
+    #         return
+    #     else:
+    #         if os.path.isfile(path):
+    #             self._grib = path
+    #             return
+    #         else:
+    #             print("Error: {} is not a file.".format(path))
+    #             return
 
-    @property
-    def grib(self):
-        return self._grib
+    ## Gets the msg from grib.
+    # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
+    # @return List of messages found
+    def getMessage(self, msg, grib):
+        try:
+            f = pygrib.open(grib)
+        except OSError as err:
+            print(err)
+            return err
+        try:
+            msg = f.select(name="{msg}".format(msg))
+        except ValueError as err:
+            print(err)
+            return err
+        return msg
 
-    @grib.setter
-    def grib(self, path):
-        if path is None:
-            self._grib = None
-            return
-        else:
-            if os.path.isfile(path):
-                self._grib = path
-                return
-            else:
-                print("Error: {} is not a file.".format(path))
-                return
+    def getMessageDetails(self, msg):
+        pass
 
     def messages(self):
         if self.grib is None:
