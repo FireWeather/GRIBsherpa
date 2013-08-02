@@ -23,8 +23,11 @@ class Blender(object):
     # These will each have many key/value pairs. The message format matches exactly the grib format.
     # Note: for queries containing multiple heights, there will be several repeated (but different) messages for each height
     # MP: Not finding -- precipital water -- its listing below is a best guess at the Message name/format.
-    MOI = [ 'Best (4-layer) lifted index', 'Convective available potential energy', 'Geopotential Height', 'Precipital water', 'Surface lifted index', 'Temperature', 'Realative humidity', 'Surface pressure',  'U component of wind', 'V component of wind', 'Wind speed' ]
+    MOI = ['Best (4-layer) lifted index', 'Convective available potential energy', 'Geopotential Height', 'Precipital water', 'Surface lifted index', 'Temperature', 'Realative humidity', 'Surface pressure',  'U component of wind', 'V component of wind', 'Wind speed']
 
+    ## "Fields of Interest" These are the fields contained within the messages (above) that we want to capture.
+    # Note that some of these fields (latitudes for example) will contain multiple values.
+    FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
 
     ## Gets the msg from grib.
     # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
@@ -55,11 +58,12 @@ class Blender(object):
                 val = msg[key]
                 dict[key] = val
         else:
-            for key in msg.keys():
-                for item in list:
-                    if key == item:
-                        dict[key] = msg[key]
+            for field in list:
+                if field in msg.keys():
+                    dict[field] = msg[field]
         return dict
+
+
 
 
 
