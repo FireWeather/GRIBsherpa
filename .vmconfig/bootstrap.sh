@@ -91,7 +91,7 @@ echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql pos
 #NOT FOR PRODUCTION / DEV USE ONLY
 sudo -u postgres createuser -e -s -d -r vagrant
 sudo -u postgres createdb -e -O vagrant vagrant
-echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
+echo "ALTER USER vagrant WITH PASSWORD 'vagrant';" | sudo -u vagrant psql postgres 
 service postgresql restart
 
 # next TEST ONLY
