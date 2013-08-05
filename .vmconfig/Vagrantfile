@@ -10,10 +10,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
   
   # POSTRGES CONNECTIONS  
-  config.vm.network :forwarded_port, guest: 5432, host: 5432, auto_correct: true
+   config.vm.network :forwarded_port, guest: 5432, host: 5432, auto_correct: true
   
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "grib-test-01"
+   config.vm.box = "grib-test-01"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.

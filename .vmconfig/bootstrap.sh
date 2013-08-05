@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# this script takes about 20 minutes to run, after it comepletes open vim
-# :BundleList
-# :BundleInstall 
-# tada all complete...
+# this script takes about 20 minutes to run
 
 if [[ $UID -ne 0 ]]; then
   echo "$0 must be run as root"
@@ -11,7 +8,6 @@ if [[ $UID -ne 0 ]]; then
 fi
 
 VAGRANT_DIR="/vagrant"
-HOME_DIR="/home/vagrant"
 POSTGIS="postgis-2.0.3"
 
 #change hosts and hostname DO IN Vagrantfile is using Vagrant
@@ -92,21 +88,6 @@ sudo -u postgres createuser -e -s -d -r vagrant
 sudo -u postgres createdb -e -O vagrant vagrant
 echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
 service postgresql restart
-
-##########################################################################
-#VIM STUFF / EVENTUALLY EXCLUDE FROM THIS SCRIPT 
-cd $VAGRANT_DIR/vimrc
-sudo -u vagrant mkdir -p $HOME_DIR/.vim/bundle/vundle
-sudo -u vagrant cp .vimrc $HOME_DIR/.vimrc
-sudo -u vagrant git clone https://github.com/gmarik/vundle.git $HOME_DIR/.vim/bundle/vundle
-sudo -u vagrant wget https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf
-sudo -u vagrant wget https://github.com/Lokaltog/powerline/raw/develop/font/10-powerline-symbols.conf
-sudo -u vagrant mkdir $HOME_DIR/.fonts
-sudo -u vagrant mv PowerlineSymbols.otf $HOME_DIR/.fonts/.
-fc-cache -vf $HOME_DIR/.fonts 
-sudo -u vagrant mkdir -p $HOME_DIR/.config/fontconfig/conf.d
-sudo -u vagrant mv 10-powerline-symbols.conf $HOME_DIR/.config/fontconfig/conf.d/.
-cd ..
 
 # next TEST ONLY
 mkdir -p /grib/tmp
