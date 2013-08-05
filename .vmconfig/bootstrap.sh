@@ -3,7 +3,7 @@
 # this script takes about 20 minutes to run
 
 if [ -f "/var/vagrant_provision" ]; then 
-  echo "Provisioner already run once"
+  echo "Provisioner already ran once"
   exit 0
 fi
 
