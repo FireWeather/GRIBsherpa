@@ -1,14 +1,24 @@
 #!/usr/bin/env bash
 
+# this script takes about 20 minutes to run, after it comepletes open vim
+# :BundleList
+# :BundleInstall 
+# tada all complete...
+
 if [[ $UID -ne 0 ]]; then
   echo "$0 must be run as root"
   exit 1
 fi
 
-#change hosts and hostname
+VAGRANT_DIR="/vagrant"
+HOME_DIR="/home/vagrant"
+POSTGIS="postgis-2.0.3"
+
+#change hosts and hostname DO IN Vagrantfile is using Vagrant
 #sed "s/vagrant-ubuntu-raring-64/owyhee/" -i /etc/hosts
 #sed "s/vagrant-ubuntu-raring-64/owyhee/" -i /etc/hostname
 
+##########################################################################
 # add user mansherpa
 adduser mansherpa --gecos "manual account for sherpa project" --disabled-password
 echo "mansherpa:mansherpa" | chpasswd 
@@ -19,19 +29,39 @@ adduser susherpa --gecos "admin account for sherpa project" --disabled-password
 echo "susherpa:susherpa" | chpasswd 
 usermod -a -G sudo susherpa 
 
-# add user 
-#adduser autosherpa --gecos "auto account for sherpa project" --disabled-password
-#echo "autosherpa:autosherpa" | chpasswd
+# add user autosherpa
+adduser autosherpa --gecos "auto account for sherpa project" --disabled-password
+echo "autosherpa:autosherpa" | chpasswd
 
 # global path settings (must prior to creating users) 
 #nothing yet
 
 # application update and install 
-
+##########################################################################
 apt-get update
 apt-get upgrade -y
-apt-get install -y git postgresql-9.1 python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 postgis libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg
+apt-get install -y git postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libgeos-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml libgdal-dev python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg tree
+sed "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" -i /etc/postgresql/9.1/main/postgresql.conf
 
+###########################################################################
+cd $VAGRANT_DIR
+wget http://download.osgeo.org/postgis/source/$POSTGIS.tar.gz
+tar xfvz $POSTGIS.tar.gz
+cd $POSTGIS
+./configure
+make
+make install
+ldconfig
+make comments-install
+make clean
+cd ..
+rm -fr $POSTGIS $POSTGIS.tar.gz
+
+ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/shp2pgsql
+ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/pgsql2shp
+ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/raster2pgsql
+
+###########################################################################
 GRIB_VERSION="1.10.4"
 GRIB_LOCATION="grib_api-$GRIB_VERSION"
 GRIB_FILE="$GRIB_LOCATION.tar.gz"
@@ -43,34 +73,43 @@ cd $GRIB_LOCATION
 ./configure
 make
 make install 
+make clean
+cd ..
+rm -fr $GRIB_FILE $GRIB_LOCATION
+
 ln -s /usr/local/lib/$GRIB_LIB /usr/lib/$GRIB_LIB
 pip-3.3 install numpy 
 pip-3.3 install pyproj
 pip-3.3 install pygrib
-cd ..
 
-rm -fr $GRIB_FILE $GRIB_LOCATION
-sudo -u postgres createuser -s -d -r susherpa
+##########################################################################
+sudo -u postgres createuser -e -s -d -r susherpa
+sudo -u postgres createdb -e -O susherpa susherpa
+echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
 
 #NOT FOR PRODUCTION / DEV USE ONLY
-sudo -u postgres createuser -s -d -r vagrant
+sudo -u postgres createuser -e -s -d -r vagrant
+sudo -u postgres createdb -e -O vagrant vagrant
+echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
+service postgresql restart
 
+##########################################################################
 #VIM STUFF / EVENTUALLY EXCLUDE FROM THIS SCRIPT 
-cd vimrc
-sudo -u vagrant cp .vimrc ~/.vimrc
-sudo -u vagrant git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+cd $VAGRANT_DIR/vimrc
+sudp -u mkdir -p $HOME_DIR/.vim/bundle/vundle
+sudo -u vagrant cp .vimrc $HOME_DIR/.vimrc
+sudo -u vagrant git clone https://github.com/gmarik/vundle.git $HOME_DIR/.vim/bundle/vundle
 sudo -u vagrant wget https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf
 sudo -u vagrant wget https://github.com/Lokaltog/powerline/raw/develop/font/10-powerline-symbols.conf
-sudo -u vagrant mkdir ~/.fonts
-sudo -u vagrant mv PowerlineSymbols.otf ~/.fonts/.
-sudo -u vagrant fc-cache -vf ~/.fonts 
-sudo -u vagrant mkdir -p ~/.config/fontconfig/conf.d
-sudo -u vagrant mv 10-powerline-symbols.conf ~/.config/fontconfig/conf.d/.
+sudo -u vagrant mkdir $HOME_DIR/.fonts
+sudo -u vagrant mv PowerlineSymbols.otf $HOME_DIR/.fonts/.
+fc-cache -vf $HOME_DIR/.fonts 
+sudo -u vagrant mkdir -p $HOME_DIR/.config/fontconfig/conf.d
+sudo -u vagrant mv 10-powerline-symbols.conf $HOME_DIR/.config/fontconfig/conf.d/.
 cd ..
 
 # next TEST ONLY
-mkdir /grib/tmp
+mkdir -p /grib/tmp
 chown vagrant /grib/tmp
 chgrp vagrant /grib/tmp
-
 
