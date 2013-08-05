@@ -96,7 +96,7 @@ service postgresql restart
 ##########################################################################
 #VIM STUFF / EVENTUALLY EXCLUDE FROM THIS SCRIPT 
 cd $VAGRANT_DIR/vimrc
-sudo -u mkdir -p $HOME_DIR/.vim/bundle/vundle
+sudo -u vagrant mkdir -p $HOME_DIR/.vim/bundle/vundle
 sudo -u vagrant cp .vimrc $HOME_DIR/.vimrc
 sudo -u vagrant git clone https://github.com/gmarik/vundle.git $HOME_DIR/.vim/bundle/vundle
 sudo -u vagrant wget https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf
