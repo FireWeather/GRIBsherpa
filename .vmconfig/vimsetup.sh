@@ -10,7 +10,7 @@ HOME_DIR="/home/$USER"
 
 ##########################################################################
 #VIM STUFF / EVENTUALLY EXCLUDE FROM THIS SCRIPT 
-cd $$USER_DIR/vimrc
+cd vimrc
 sudo -u $USER mkdir -p $HOME_DIR/.vim/bundle/vundle
 sudo -u $USER cp .vimrc $HOME_DIR/.vimrc
 sudo -u $USER git clone https://github.com/gmarik/vundle.git $HOME_DIR/.vim/bundle/vundle

@@ -2,6 +2,11 @@
 
 # this script takes about 20 minutes to run
 
+if [ -f "/var/vagrant_provision" ]; then 
+  echo "Provisioner already run once"
+  exit 0
+fi
+
 if [[ $UID -ne 0 ]]; then
   echo "$0 must be run as root"
   exit 1
@@ -94,3 +99,4 @@ mkdir -p /grib/tmp
 chown vagrant /grib/tmp
 chgrp vagrant /grib/tmp
 
+touch /var/vagrant_provision
