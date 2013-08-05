@@ -43,7 +43,7 @@ apt-get update
 apt-get upgrade -y
 apt-get install -y git postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libgeos-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml libgdal-dev python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg tree
 sed "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" -i /etc/postgresql/9.1/main/postgresql.conf
-
+sed 's/^host.*/host\tall\t\tall\t\tall\t\t\tmd5/' -i /etc/postgresql/9.1/main/pg_hba.conf
 ###########################################################################
 cd $VAGRANT_DIR
 wget http://download.osgeo.org/postgis/source/$POSTGIS.tar.gz
