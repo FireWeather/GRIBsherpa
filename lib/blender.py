@@ -9,6 +9,8 @@ __author__ = 'MCP'
 import pygrib
 import psycopg2
 import os
+import numpy
+import csv
 
 
 ## This class wraps pygrib functionality and breaks data down in a way that can then be stored in the database.
@@ -64,6 +66,48 @@ class Blender(object):
                 else:
                     dict[field] = "NOT FOUND" #todo change this depending on database standards for empty fields
         return dict
+
+    # todo: make sure you understand how this works (numpy functionality)
+    ## This looks for the closest coordinates to what we are looking for and, once found
+    #  gets the corresponding 'value' field.
+    def getValue(self, lat, lon, message):
+        # Get the coordinates closest to what we're looking for
+        cords = [self.__findNearest(message['distinctLatitudes'], lat),
+                 self.__findNearest(message['distinctLongitudes'], lon)]
+        val = message.values[cords[0], cords[1]]
+        return {'lat': cords[0], 'lon': cords[1], 'val': val}
+
+    # ----------------------------------- Private ------------------------------------
+
+    ## This solution for finding the nearest value in a numpy array came from stackoverflow.
+    #  http://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
+    def __findNearest(self, array, value):
+        index = (numpy.abs(array-value)).argmin()
+        return array[index]
+
+
+    ## Import the lat/lon values we are looking for as specified in CSV files
+    def __importCsvLatLon(self, csv_file):
+        values = []
+        try:
+            f = open(csv, 'r')
+        except FileNotFoundError as err:
+            print("Error in url_parser::__importCsvLatLon - csv file not found")
+            return
+        reader = csv.reader(f)
+        for row in reader:
+            values.append([row[1], row[2]])
+        return values
+
+    def __openGrib(self, file):
+        try:
+            f = pygrib.open(file)
+        except FileNotFoundError as err:
+            print("Error in blender::__openGrib - File Not found")
+            return
+        return f
+
+
 
 
 
