@@ -41,3 +41,7 @@ class TestFetcher(unittest.TestCase):
         self.assertIsInstance(html, ValueError)
 
 
+
+# This allows the tests to be run as a stand alone module.
+if __name__ == '__main__':
+    unittest.main()
