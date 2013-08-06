@@ -75,7 +75,7 @@ class Fetcher(object):
     # NOTE: the increment must correspond to an actual increment provided by NOAA, otherwise
     # errors will be thrown. If this happens the method will continue trying to downloading
     # any files that it find matches for until fh_end has been reached.
-    def download_param_grib_range(self, model_type, model_run_dateHour, fh_start, fh_end, increment):
+    def download_param_grib_range(self, model_type, degree, model_run_dateHour, fh_start, fh_end, increment):
         start = fh_start
         end = fh_end
         inc = increment
@@ -85,7 +85,7 @@ class Fetcher(object):
               "............end = " + str(end) + "\n" +
               "............increment = " + str(inc))
         while start <= end:
-            to_download = self.url_parser.build_download_url(model_type, model_run_dateHour, start)
+            to_download = self.url_parser.build_download_url(model_type, degree, model_run_dateHour, start)
             file_name = str(model_run_dateHour)[:4] + "_" + str(model_run_dateHour)[4:6] + "_" + str(model_run_dateHour)[6:8] + "_" + str(model_run_dateHour)[8:] + "_" + self.__three_hr_fh(start) + ".grib"   
             self.__download(to_download, file_name)
             start += inc

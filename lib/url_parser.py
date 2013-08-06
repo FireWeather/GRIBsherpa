@@ -26,6 +26,22 @@ class UrlParser(object):
     nam_fh_format = 'nam.t$MRHOUR$z.awip32$FHOUR$.tm00.grib2'
     nam_mr_format = 'nam.$MRDATE$'
 
+    # gfs = {'url' : 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs$DEGREE$.pl?file=$FORECASTHOUR$&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2F$MODELRUN$%2Fmaster',
+    #        'fh_format' : 'gfs.t$MRHOUR$z.pgrbf$FHOUR$.grib2',
+    #        'mr_format' : 'gfs.$MRDATE$',
+    #        'degreeRegex' : '$DEGREE$',
+    #        0.5 : '_hd',
+    #        1.0 : '',
+    #        2.5 : '_2p5'
+    #        }
+    gfs = {0.5 : 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_hd.pl?file=gfs.t$MRHOUR$z.mastergrb2f$FHOUR$.grib2&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2Fgfs.$MRDATE$%2Fmaster',
+           1.0 : 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs.pl?file=gfs.t$MRHOUR$z.pgrbf$FHOUR$.grib2&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2Fgfs.$MRDATE$',
+           2.5 : 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_2p5.pl?file=gfs.t$MRHOUR$z.pgrbf$FHOUR$.2p5deg.grib2&lev_500_mb=on&lev_700_mb=on&lev_850_mb=on&lev_1000_mb=on&all_var=on&leftlon=133&rightlon=95&toplat=55&bottomlat=25&dir=%2Fgfs.$MRDATE$',
+           'mrDateRegex' : '\$MRDATE\$',
+           'mrHourRegex' : '\$MRHOUR\$',
+           'fhRegex' : '\$FHOUR\$',
+           }
+
     #lev_filters = { "all levels" : "all_levels=on",
     #                "500 mb" : "lev_500_mb=on",
     #                "700 mb" : "lev_700_mb=on",
@@ -41,23 +57,33 @@ class UrlParser(object):
     ## Uses mr_type and dateHour to build the corresponding model run
     def build_model_run(self, mr_type, date_hour):
         if mr_type.lower() == 'gfs':
-            return re.sub('\$MRDATE\$', str(date_hour), self.gfs_mr_format)
+            return re.sub('\$MRDATE\$', str(date_hour), self.gfs['url'])
         elif mr_type.lower() == 'nam':
             return re.sub('\$MRDATE\$', str(date_hour), self.nam_mr_format)
         else:
-            print('toots')
+            print('Error in url_parser::build_model_run - model type not recognized')
 
-    def build_download_url(self, model_type, mr_dateHour, forecast_hr):
-        model_run = self.build_model_run(model_type, mr_dateHour)
-        forecast_hour = self.__build_forecast_hr(model_type, mr_dateHour, forecast_hr)
+    def build_download_url(self, model_type, degree, mr_dateHour, forecast_hr):
         if model_type.lower() == 'gfs':
-            return self.__search_replace_partial_path(self.partial_gfs_path, model_run, forecast_hour)
+            partial_path = self.gfs[degree]
+            final_path = self.__build_path(partial_path, mr_dateHour, forecast_hr)
+            return final_path
         elif model_type.lower() == 'nam':
             return self.__search_replace_partial_path(self.partial_nam_path, model_run, forecast_hour)
         else:
             print('euro model')
 
     # -------------------------------- Private -------------------------------------
+
+    ## Works through the partial path specified (organized by degree in class variable) from
+    # left to right, subbing in key fields.
+    def __build_path(self, partial_path, mr_dateHour, forecast_hr):
+        # add in the model run hour
+        pWithMrHour = self.__add_to_forecast_hr('\$MRHOUR\$', partial_path, str(mr_dateHour)[-2:])
+        # add in the forecast hour
+        pWithFhour = self.__add_to_forecast_hr('\$FHOUR\$', pWithMrHour, forecast_hr)
+        # add in the model run date
+        return self.__add_to_forecast_hr('\$MRDATE\$', pWithFhour, )
     # expects '$HOUR$' to be in string, replaces it with 'hour'
     def __add_to_forecast_hr(self, regex, string, hour):
         hr = hour
