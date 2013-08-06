@@ -20,15 +20,15 @@ class TestUrlParser(unittest.TestCase):
         pass
 
     def test_build_path_half(self):
-        path = self.urlParser.build_download_url("gfs", 0.5, 2013080606, 00)
+        path = self.urlParser.build_download_url("gfs", 2013080606, 00, 0.5)
         print(path)
 
     def test_build_path_one(self):
-        path = self.urlParser.build_download_url('gfs', 1.0, 2013080606, 00)
+        path = self.urlParser.build_download_url('gfs', 2013080606, 00, 1.0)
         print(path)
 
     def test_build_path_twoFive(self):
-        path = self.urlParser.build_download_url('gfs', 2.5, 2013080606, 00)
+        path = self.urlParser.build_download_url('gfs', 2013080606, 00, 2.5)
         print(path)
 
 if __name__ == '__main__':

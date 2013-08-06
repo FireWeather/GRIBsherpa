@@ -19,6 +19,7 @@ class TestFetcher(unittest.TestCase):
     #tests can take parameters except for "(self)"
     def setUp(self):
         self.fetcher = lib.fetcher.Fetcher()
+        self.mrDhour = 2013080300
 
     #get rid of anything you created for testing that you don't want to live on. I usually would use this
     #for cleaning up files or temporary folders or something.
@@ -40,7 +41,14 @@ class TestFetcher(unittest.TestCase):
         html = self.fetcher.get_html('www.hopefullythisurldoesntexist.com')
         self.assertIsInstance(html, ValueError)
 
+    # todo: figure out a way to assert downloads occured
+    def test_download_gfs_files(self):
+        self.fetcher.download_param_grib_range('gfs', self.mrDhour, 00, 6, 6, 0.5)
+        self.fetcher.download_param_grib_range('gfs', self.mrDhour, 00, 6, 6, 1.0)
+        self.fetcher.download_param_grib_range('gfs', self.mrDhour, 00, 6, 6, 2.5)
 
+    def test_download_nam_file(self):
+        self.fetcher.download_param_grib_range('nam', self.mrDhour, 00, 6, 6)
 
 # This allows the tests to be run as a stand alone module.
 if __name__ == '__main__':
