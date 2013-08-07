@@ -41,7 +41,7 @@ echo "autosherpa:autosherpa" | chpasswd
 ##########################################################################
 apt-get update
 apt-get upgrade -y
-apt-get install -y git postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libgeos-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml libgdal-dev python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg tree
+apt-get install -y git postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libgeos-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml libgdal-dev python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg tree postgresql-contrib-9.1 
 sed "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" -i /etc/postgresql/9.1/main/postgresql.conf
 sed 's/^host.*/host\tall\t\tall\t\tall\t\t\tmd5/' -i /etc/postgresql/9.1/main/pg_hba.conf
 ###########################################################################
@@ -84,14 +84,16 @@ pip-3.3 install pyproj
 pip-3.3 install pygrib
 
 ##########################################################################
-sudo -u postgres createuser -e -s -d -r susherpa
-sudo -u postgres createdb -e -O susherpa susherpa
-echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
+cd $VAGRANT_DIR
+sudo -u postgres psql -e -f dbcreations.psql
+#sudo -u postgres createuser -e -s -d -r susherpa
+#sudo -u postgres createdb -e -O susherpa susherpa
+#echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
 
 #NOT FOR PRODUCTION / DEV USE ONLY
-sudo -u postgres createuser -e -s -d -r vagrant
-sudo -u postgres createdb -e -O vagrant vagrant
-echo "ALTER USER vagrant WITH PASSWORD 'vagrant';" | sudo -u vagrant psql postgres 
+#sudo -u postgres createuser -e -s -d -r vagrant
+#sudo -u postgres createdb -e -O vagrant vagrant
+#echo "ALTER USER vagrant WITH PASSWORD 'vagrant';" | sudo -u vagrant psql postgres 
 service postgresql restart
 
 # next TEST ONLY

@@ -1,10 +1,20 @@
--- psql 
+-- TODO include license statement
+
+-- DEV ONLY --
+CREATE USER vagrant;
+CREATE DATABASE vagrant OWNER vagrant;
+ALTER USER vagrant WITH PASSWORD 'vagrant';
+-- END DEV ONLY --
+
+
+CREATE USER susherpa;
+CREATE DATABASE susherpa OWNER susherpa;
+ALTER USER susherpa WITH PASSWORD 'susherpa';
 
 CREATE DATABASE stormking OWNER susherpa;
+
 \c stormking
 CREATE EXTENSION postgis;
-
--- 
 
 CREATE TABLE model_run (
   model_run_date date NOT NULL, 
@@ -45,10 +55,9 @@ CREATE TABLE model_grid_points (
 );
 
 CREATE TABLE met_data ( 
+    value real NOT NULL,
     met_data_pkey SERIAL PRIMARY KEY, 
     met_param_pkey smallint NOT NULL REFERENCES met_param (met_param_pkey),
     model_grid_points_pkey integer NOT NULL REFERENCES model_grid_points (model_grid_points_pkey), 
     model_forecast_relation_pkey integer NOT NULL REFERENCES model_forecast_relation (model_forecast_relation_pkey) 
 );   
---    forecast_hour_pkey interval NOT NULL REFERENCES forecast_hour (forecast_hour_pkey),
---    model_run_pkey serial NOT NULL REFERENCES model_run (model_run_pkey),
