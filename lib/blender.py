@@ -27,9 +27,11 @@ class Blender(object):
     # MP: Not finding -- precipital water -- its listing below is a best guess at the Message name/format.
     MOI = ['Best (4-layer) lifted index', 'Convective available potential energy', 'Geopotential Height', 'Precipital water', 'Surface lifted index', 'Temperature', 'Realative humidity', 'Surface pressure',  'U component of wind', 'V component of wind', 'Wind speed']
 
+
     ## "Fields of Interest" These are the fields contained within the messages (above) that we want to capture.
     # Note that some of these fields (latitudes for example) will contain multiple values.
     FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
+
 
     ## Gets the msg from grib.
     # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
@@ -47,7 +49,20 @@ class Blender(object):
             return err
         return msgs
 
+    
+    ## Returns a list of all matching messages found
+    #  @param msgs    the list of messages you are interested in (an array)
+    #  @return        returns an array of matches
+    def getMessages(self, msgs, grib):
+        toReturn = []
+        for msg in msgs:
+            matches = self.getMessage(msg, grib)
+            for match in matches:
+                toReturn.append(match)
+        return toReturn
 
+
+    # todo: depreciate this
     ## Breaks down msg (pygrib mesage) into a dictionary. Will return all fields
     # if list is not specified else will try to return fields specified in list.
     # @param msg pygrib message
@@ -67,15 +82,20 @@ class Blender(object):
                     dict[field] = "NOT FOUND" #todo change this depending on database standards for empty fields
         return dict
 
+
     # todo: make sure you understand how this works (numpy functionality)
     ## This looks for the closest coordinates to what we are looking for and, once found
-    #  gets the corresponding 'value' field.
-    def getValue(self, lat, lon, message):
+    #  gets corresponding data fields.
+    def getValues(self, lat, lon, message):
         # Get the coordinates closest to what we're looking for
         cords = [self.__findNearest(message['distinctLatitudes'], lat),
                  self.__findNearest(message['distinctLongitudes'], lon)]
         val = message.values[cords[0], cords[1]]
-        return {'lat': cords[0], 'lon': cords[1], 'val': val}
+        return {'lat': cords[0], 'lon': cords[1], 'val': val, 'name': message['name'], 'val_units': message['units'],
+                'level': message['level'], 'level_units': message['typeOfLevel'], 'year': message['year'],
+                'month': message['month'], 'day': message['day'], 'hour': message['hour']}
+
+
 
     # ----------------------------------- Private ------------------------------------
 
@@ -99,6 +119,8 @@ class Blender(object):
             values.append([row[1], row[2]])
         return values
 
+
+    ## This wraps Pygrib.open in a try catch block.
     def __openGrib(self, file):
         try:
             f = pygrib.open(file)
