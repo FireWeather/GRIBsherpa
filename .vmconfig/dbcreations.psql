@@ -1,0 +1,53 @@
+-- psql 
+
+CREATE DATABASE stormking OWNER susherpa;
+\c stormking
+CREATE EXTENSION postgis;
+
+-- 
+
+CREATE TABLE model_run (
+  model_run_date date NOT NULL, 
+  model_run_time timetz NOT NULL, 
+  model_run_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE forecast_hour (
+  forcast_hour interval NOT NULL, 
+  forcast_hour_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE model_forecast_relation (
+  model_run_pkey integer NOT NULL REFERENCES model_run (model_run_pkey),
+  forcast_hour_pkey integer NOT NULL REFERENCES forecast_hour (forecast_hour_pkey),
+  model_forecast_relation_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE met_param (
+  level short NOT NULL, 
+  level_unit text NOT NULL, 
+  attribute text NOT NULL, 
+  attribute_unit text NOT NULL, 
+  met_param_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE regions (
+  region_name text NOT NULL, 
+  region_number short NOT NULL UNIQUE PRIMARY KEY
+);
+
+CREATE TABLE model_grid_points (
+  model_grid_points_pkey SERIAL PRIMARY KEY, 
+  region_number short NOT NULL REFERENCES regions (region_number), 
+  region_ref_number short NOT NULL, 
+  national_ref_number short UNIQUE, 
+  location geography(POINT,4326)
+);
+
+CREATE TABLE met_data ( 
+    met_data_pkey SERIAL PRIMARY KEY, 
+    model_grid_points_pkey integer NOT NULL REFERENCES model_grib_points (model_grid_points_pkey), 
+    model_forecast_relation_pkey integer NOT NULL REFERENCES model_forecast_relation (model_forecast_relation_pkey) 
+);   
+--    forecast_hour_pkey interval NOT NULL REFERENCES forecast_hour (forecast_hour_pkey),
+--    model_run_pkey serial NOT NULL REFERENCES model_run (model_run_pkey),
