@@ -1,0 +1,63 @@
+-- TODO include license statement
+
+-- DEV ONLY --
+CREATE USER vagrant;
+CREATE DATABASE vagrant OWNER vagrant;
+ALTER USER vagrant WITH PASSWORD 'vagrant';
+-- END DEV ONLY --
+
+
+CREATE USER susherpa;
+CREATE DATABASE susherpa OWNER susherpa;
+ALTER USER susherpa WITH PASSWORD 'susherpa';
+
+CREATE DATABASE stormking OWNER susherpa;
+
+\c stormking
+CREATE EXTENSION postgis;
+
+CREATE TABLE model_run (
+  model_run_date date NOT NULL, 
+  model_run_time timetz NOT NULL, 
+  model_run_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE forecast_hour (
+  forecast_hour interval NOT NULL, 
+  forecast_hour_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE model_forecast_relation (
+  model_run_pkey integer NOT NULL REFERENCES model_run (model_run_pkey),
+  forecast_hour_pkey integer NOT NULL REFERENCES forecast_hour (forecast_hour_pkey),
+  model_forecast_relation_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE met_param (
+  level smallint NOT NULL, 
+  level_unit text NOT NULL, 
+  attribute text NOT NULL, 
+  attribute_unit text NOT NULL, 
+  met_param_pkey SERIAL PRIMARY KEY
+);
+
+CREATE TABLE regions (
+  region_name text NOT NULL, 
+  region_number smallint NOT NULL UNIQUE PRIMARY KEY
+);
+
+CREATE TABLE model_grid_points (
+  model_grid_points_pkey SERIAL PRIMARY KEY, 
+  region_number smallint NOT NULL REFERENCES regions (region_number), 
+  region_ref_number smallint NOT NULL, 
+  national_ref_number smallint UNIQUE, 
+  location geography(POINT,4326)
+);
+
+CREATE TABLE met_data ( 
+    value real NOT NULL,
+    met_data_pkey SERIAL PRIMARY KEY, 
+    met_param_pkey smallint NOT NULL REFERENCES met_param (met_param_pkey),
+    model_grid_points_pkey integer NOT NULL REFERENCES model_grid_points (model_grid_points_pkey), 
+    model_forecast_relation_pkey integer NOT NULL REFERENCES model_forecast_relation (model_forecast_relation_pkey) 
+);   
