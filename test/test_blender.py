@@ -21,3 +21,5 @@ class TestBlender(unittest.TestCase):
         message = self.blender.get_message('Temperature', './grib.grib2')
         self.assertIsInstance(message, list)
 
+if __name__ == '__main__':
+    unittest.main()

@@ -61,6 +61,8 @@ class Blender(object):
             for field in list:
                 if field in msg.keys():
                     dict[field] = msg[field]
+                else:
+                    dict[field] = "NOT FOUND" #todo change this depending on database standards for empty fields
         return dict
 
 
