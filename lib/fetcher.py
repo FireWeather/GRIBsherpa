@@ -30,7 +30,7 @@ class Fetcher(object):
     def __init__(self, args=None):
         self.url_parser = lib.url_parser.UrlParser()
         self.html_parser = lib.html_parser.GribHtmlParser()
-        self.url = self.__default_args("url", args)
+        self.url = self.__default_args("url", args) #optional url to download todo: remove this?
         self.store_loc = self.__default_args("store_loc", args)
 
 
@@ -112,6 +112,9 @@ class Fetcher(object):
             return None
 
 
+    ## This is used to return meaningful default args in __init__. It contains particular
+    #  functionality for making sure there is a default store location for downloads. Otherwise
+    #  it returns type in args (if it exists) or returns none.
     def __default_args(self, type, args):
         if args is None or not args.contains(type):
             if type == "store_loc":

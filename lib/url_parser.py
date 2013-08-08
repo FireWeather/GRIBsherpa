@@ -27,6 +27,10 @@ class UrlParser(object):
     #                "850 mb" : "lev_850_mb=on",
     #                "1000 mb" : "lev_1000_mb=on" }
     #var_filters = { "all variables" : "all_var=on" }
+    #box_filters = {"left": "leftlon=",
+    #               "right": "rightlon=",
+    #               "top": "toplat=",
+    #               "bottom": "bottomlat="}
 
 
     ## Creates a url to be used in downloading files.

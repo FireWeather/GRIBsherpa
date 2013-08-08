@@ -33,33 +33,21 @@ class Blender(object):
     FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
 
 
-    ## Gets the msg from grib.
-    # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
-    # @return List of messages found
-    def getMessage(self, msg, grib):
-        try:
-            f = pygrib.open(grib)
-        except OSError as err:
-            print(err)
-            return err
-        try:
-            msgs = f.select(name="{0}".format(msg))
-        except ValueError as err:
-            print(err)
-            return err
-        return msgs
-
-    
-    ## Returns a list of all matching messages found
-    #  @param msgs    the list of messages you are interested in (an array)
+    ## Returns a list of all matching messages found. Msgs can either be a
+    #  single message type (ex. "Temperature") or it can be a list of messages
+    #  (ex. ["Temperature", "Geopotential Height",...])
+    #  @param msgs    single item (string) or array
     #  @return        returns an array of matches
     def getMessages(self, msgs, grib):
         toReturn = []
-        for msg in msgs:
-            matches = self.getMessage(msg, grib)
-            for match in matches:
-                toReturn.append(match)
-        return toReturn
+        if type(msgs) == list:
+            for msg in msgs:
+                matches = self.getMessage(msg, grib)
+                for match in matches:
+                    toReturn.append(match)
+            return toReturn
+        else:
+            return self.__getMessage(msgs, grib)
 
 
     # todo: depreciate this
@@ -79,7 +67,7 @@ class Blender(object):
                 if field in msg.keys():
                     dict[field] = msg[field]
                 else:
-                    dict[field] = "NOT FOUND" #todo change this depending on database standards for empty fields
+                    dict[field] = "NOT FOUND"
         return dict
 
 
@@ -97,6 +85,8 @@ class Blender(object):
 
 
 
+
+
     # ----------------------------------- Private ------------------------------------
 
     ## This solution for finding the nearest value in a numpy array came from stackoverflow.
@@ -105,6 +95,22 @@ class Blender(object):
         index = (numpy.abs(array-value)).argmin()
         return array[index]
 
+
+    ## Gets the msg from grib.
+    # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
+    # @return List of messages found
+    def __getMessage(self, msg, grib):
+        try:
+            f = pygrib.open(grib)
+        except OSError as err:
+            print(err)
+            return err
+        try:
+            msgs = f.select(name="{0}".format(msg))
+        except ValueError as err:
+            print(err)
+            return err
+        return msgs
 
     ## Import the lat/lon values we are looking for as specified in CSV files
     def __importCsvLatLon(self, csv_file):
