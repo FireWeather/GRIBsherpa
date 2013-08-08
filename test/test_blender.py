@@ -7,6 +7,7 @@ __author__ = 'MCP'
 # --------------------------------------------------------
 
 import unittest
+import numpy
 import lib.blender
 
 class TestBlender(unittest.TestCase):
@@ -14,6 +15,8 @@ class TestBlender(unittest.TestCase):
     def setUp(self):
         self.blender = lib.blender.Blender()
         self.grib = './grib.grib2'
+        self.arr = [1,2,3,4,5]
+
 
     def tearDown(self):
         pass
@@ -28,6 +31,13 @@ class TestBlender(unittest.TestCase):
         vals = self.blender.getValues(90, 270, message)
         print(vals)
         # todo: add assertion here
+
+    def test_form_lat_lon_pairs(self):
+        #create a numpy array
+        vals = numpy.array([1,2,3,4,5])
+        result = self.blender.formLatLonPairs(vals, vals)
+        self.assertEqual(result, [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]])
+
 
 
 

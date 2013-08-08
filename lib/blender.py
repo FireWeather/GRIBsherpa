@@ -74,26 +74,55 @@ class Blender(object):
     # todo: make sure you understand how this works (numpy functionality)
     ## This looks for the closest coordinates to what we are looking for and, once found
     #  gets corresponding data fields.
+    #def getValues(self, lat, lon, message):
+    #    # Get the coordinates closest to what we're looking for
+    #    cords = [self.__findNearest(message['distinctLatitudes'], lat),
+    #            self.__findNearest(message['distinctLongitudes'], lon)]
+    #    val = message.values[cords[0], cords[1]]
+    #    return {'lat': cords[0], 'lon': cords[1], 'val': val, 'name': message['name'], 'val_units': message['units'],
+    #            'level': message['level'], 'level_units': message['typeOfLevel'], 'year': message['year'],
+    #            'month': message['month'], 'day': message['day'], 'hour': message['hour']}
+
     def getValues(self, lat, lon, message):
-        # Get the coordinates closest to what we're looking for
-        cords = [self.__findNearest(message['distinctLatitudes'], lat),
-                 self.__findNearest(message['distinctLongitudes'], lon)]
-        val = message.values[cords[0], cords[1]]
-        return {'lat': cords[0], 'lon': cords[1], 'val': val, 'name': message['name'], 'val_units': message['units'],
-                'level': message['level'], 'level_units': message['typeOfLevel'], 'year': message['year'],
-                'month': message['month'], 'day': message['day'], 'hour': message['hour']}
-
-
+        return self.__interpolate(lat, lon, message)
 
 
 
     # ----------------------------------- Private ------------------------------------
 
+    # -------------------------------- Test Doubles ----------------------------------
+    # The following methods are test dummies for verifying/testing private methods.
+    #  They should be commented out (as should their tests) once debugging is finalized.
+    # todo: comment these out
+    def formLatLonPairs(self, numpyLats, numpyLons):
+        return self.__formLatLonPairs(numpyLats, numpyLons)
+
+    # ----------------------------- End Test Doubles ---------------------------------
+
+
     ## This solution for finding the nearest value in a numpy array came from stackoverflow.
     #  http://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-    def __findNearest(self, array, value):
-        index = (numpy.abs(array-value)).argmin()
-        return array[index]
+    #def __findNearest(self, array, value):
+    #   index = (numpy.abs(array-value)).argmin()
+    #    return array[index]
+
+    def __interpolate(self, lat, lon, message):
+        # Form array of tuples of lat lon pairs
+        points = self.__formLatLonPairs(message["latitudes"], message["longitudes"])
+        values = message["values"]
+        xi = [lat, lon]
+
+
+    ## Takes two numpy arrays and combines them into tuples
+    #  @return    array of tuples corresponding to lat lon pairs
+    def __formLatLonPairs(self, numpyLats, numpyLons):
+        latLons = []
+        index = 0
+        for item in numpyLats:
+            newPair = [item, numpyLons[index]]
+            index += 1
+            latLons.append(newPair)
+        return latLons
 
 
     ## Gets the msg from grib.
