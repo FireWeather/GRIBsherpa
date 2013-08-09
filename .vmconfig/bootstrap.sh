@@ -41,7 +41,7 @@ echo "autosherpa:autosherpa" | chpasswd
 ##########################################################################
 apt-get update
 apt-get upgrade -y
-apt-get install -y git postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libgeos-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml libgdal-dev python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg tree postgresql-contrib-9.1 
+apt-get install -y git postgresql-9.1 postgresql-server-dev-9.1 libxml2-dev libgeos-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml libgdal-dev python3.3 python3.3-dev python3-pip build-essential gdb openssh-server libopenjpeg2 libopenjpeg-dev python3-psycopg2 libpython3-dbg libpython3.3-dbg python3-dbg python3-psycopg2-dbg python3.3-dbg tree postgresql-contrib-9.1 python3-scipy python3-scipy-dbg python3-numpy python3-numpy-dbg
 sed "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" -i /etc/postgresql/9.1/main/postgresql.conf
 sed 's/^host.*/host\tall\t\tall\t\tall\t\t\tmd5/' -i /etc/postgresql/9.1/main/pg_hba.conf
 ###########################################################################
@@ -79,7 +79,7 @@ cd ..
 rm -fr $GRIB_FILE $GRIB_LOCATION
 
 ln -s /usr/local/lib/$GRIB_LIB /usr/lib/$GRIB_LIB
-pip-3.3 install numpy 
+#pip-3.3 install numpy 
 pip-3.3 install pyproj
 pip-3.3 install pygrib
 
