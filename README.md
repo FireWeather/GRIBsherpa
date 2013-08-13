@@ -1,6 +1,6 @@
 #GRIBsherpa
 GRIBsherpa is a tool/framework that gathers meteorological forecast data for the use in a wildfire prediction tool. The program will:
-* Provide the ability to automate (schedule) the download of various meteorlogical models (GFS, NAM, ECMWF)
+* Provide the ability to automate the download of various meteorlogical models (GFS, NAM, ECMWF)
 * Provide tools for the extraction and verification of data
 * Store extracted data into a relational database and create stored procedures for common use cases
 
