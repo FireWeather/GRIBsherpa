@@ -4,10 +4,12 @@ GRIBsherpa is a tool/framework that gathers meteorological forecast data for the
 * Provide tools for the extraction and verification of data
 * Store extracted data into a relational database and create stored procedures for common use cases
 
-The project uses python, postgres, shell, Vagrant, psycopg2 and a host of other open source libraries such as [PyGrib](code.google.com/p/pygrib/).  Contributions welcome. Any questions regarding the project contact Matt Pate mattpate at gmail.com or Dan Catalano daniel.w.catalano at gmail.com.
+The project uses python, postgres, shell, Vagrant, psycopg2 and a host of other open source libraries such as [PyGrib](http://code.google.com/p/pygrib/).  Contributions welcome. Any questions regarding the project contact Matt Pate mattpate at gmail.com or Dan Catalano daniel.w.catalano at gmail.com.
 
 ##Installation
-The application framework is currently installed on a virtual machine (VM) which acts as the development environment through the use of Vagrant. There are only two requirements for the host machine to get started. 1) VirtualBox (4.2.16) and 2) Vagrant (1.2.4 -> up).
+The application framework is currently installed on a virtual machine (VM) which acts as the development environment through the use of Vagrant. There are only two requirements for the host machine to get started developing: 1) VirtualBox (4.2.16) and 2) Vagrant (1.2.4 -> up). To reiterate, this project can be developed on any OS so long as the two requirements are met.
+
+A quick intro to Vagrant. //TODO
 
 The first steps for using these tools involve installing necessary dependencies.  A shell script is provided in this repo (Vagrant/bootstrap.sh) which can be run from the command-line and will install all necessary dependencies.  If you would like to manually install these, refer to this script for details.  
 
