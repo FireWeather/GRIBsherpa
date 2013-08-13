@@ -1,4 +1,3 @@
-__author__ = 'MCP'
 # --------------------------------------------------------
 # Copyright (c) 2013 Matthew Pate and Daniel Catalano
 # [This program is licensed under the "MIT License"]
