@@ -6,7 +6,7 @@ GRIBsherpa is a tool/framework that gathers meteorological forecast data for the
 
 The project is written in python and utilizes various open source tools.  Contributions welcome.
 
-Any questions regarding the project contact [Matt Pate](mattpate@gmail.com) or [Dan Catalano](daniel.w.catalano@gmail.com)
+Any questions regarding the project contact Matt Pate mattpate at gmail.com or Dan Catalano daniel.w.catalano at gmail.com
 
 ##Installation
 This framework is installed on Ubuntu 13.04 (server or desktop).
