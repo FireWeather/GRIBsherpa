@@ -3,6 +3,7 @@ GRIBsherpa is a tool/framework that gathers meteorological forecast data for the
 * Provide the ability to automate (schedule) the download of various meteorlogical models (GFS, NAM, ECMWF)
 * Provide tools for the extraction and verification of data
 * Store extracted data into a relational database and create stored procedures for common use cases
+
 The project is written in python and utilizes various open source tools.  Contributions welcome.
 
 ##Installation
