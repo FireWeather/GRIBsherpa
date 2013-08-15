@@ -11,3 +11,6 @@ __pycache__
 
 # Ignore the .vagrant folder in .vmconfig folder
 .vmconfig/.vagrant/*
+
+# Ignore log files (in log dir)
+log/*
