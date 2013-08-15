@@ -6,6 +6,7 @@
 # --------------------------------------------------------
 
 import psycopg2
+import lib.globe
 
 
 ## This class manages all the database logic.  This includes connecting, logging, stored procedures, etc.
@@ -31,6 +32,8 @@ class RecordKeeper:
     # todo: figure out error handling here.  Haven't found in docs yet.
     def openDbConnection(self, connection_string):
         self.dbConnection = psycopg2.connect(connection_string)
+
+
 
 
     # ----------------------------------- Procedures ----------------------------------------

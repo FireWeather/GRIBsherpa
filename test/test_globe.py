@@ -8,13 +8,14 @@
 #import the test suite
 import unittest
 #import the class you want to test
-import lib.global
+import lib.globe as globe
 
 #idiomatic way to name your test. Be sure to include "(unittest.TestCase)"
 class TestGlobal(unittest.TestCase):
 
     def test_logging_works_from_global(self):
-        pass
+        print("in action")
+        globe.log.info("You should see this on the command line.")
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@
 
 import logging
 import os
-import date
+import datetime
 
 
 # ---------------------------- Logging global config ------------------------
@@ -25,8 +25,10 @@ if not os.path.exists(log_dir):
     print("Error in logger::createLogFile - " + log_dir + " does not exist.")
 
 # name logfile ...log/todaysdate
-logFile = log_dir + str(date.today())
+logFile = log_dir + str(datetime.date.today())
 
 logging.basicConfig(filename=logFile, level=logging.INFO)
+
+log = logging
 
 
