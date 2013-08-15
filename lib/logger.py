@@ -32,7 +32,7 @@ if not os.path.exists(log_dir):
     print("Error in logger::createLogFile - " + log_dir + " does not exist.")
 
 # name logfile ...log/todaysdate
-logFile = log_dir + str(datetime.date.today())
+logFile = log_dir + str(datetime.date.today()) + ".log"
 
 logging.basicConfig(filename=logFile, level=logging.INFO)
 
