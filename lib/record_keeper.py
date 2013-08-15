@@ -6,7 +6,7 @@
 # --------------------------------------------------------
 
 import psycopg2
-import lib.globe
+import lib.logger as logger
 
 
 ## This class manages all the database logic.  This includes connecting, logging, stored procedures, etc.

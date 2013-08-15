@@ -5,6 +5,13 @@
 # of this software for license terms.
 # --------------------------------------------------------
 
+# This module is for holding any global variables that need to be set/used.
+# It was created initially to configure and instantiate the global "logger" so that all
+# modules could use logging functionality by simply including this module.  This
+# allows the use of logging without necessarily having to be the
+# "__main__" module (this is where the examples use and initialize the logger
+# typically).
+
 import logging
 import os
 import datetime
@@ -12,9 +19,9 @@ import datetime
 
 # ---------------------------- Logging global config ------------------------
 # In subsequent modules the logger will be used with the following call:
-# > global.logging.info()
-# > global.logging.warn()
-# > global.logging.debug()
+# > globe.log.info()
+# > globe.log.warn()
+# > globe.log.debug()
 
 # This sets the initial logging functionality.  The first call through this sets the vars
 # the second + calls are essentially no ops as per the documentation.
