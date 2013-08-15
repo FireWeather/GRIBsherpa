@@ -37,7 +37,7 @@ class RecordKeeper:
     # My gut tells me that for now the best way to store our queries and insertions are as functions.
     # This will make changes easier and allow flexibility early until we get our design nailed down.
 
-    
+
 
 
 
