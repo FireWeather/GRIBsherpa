@@ -7,7 +7,7 @@ GRIBsherpa is a tool/framework that gathers meteorological forecast data for use
 The project uses python, postgres, shell, Vagrant, psycopg2 and a host of other open source libraries such as [PyGrib](http://code.google.com/p/pygrib/).  Contributions to this project are welcome. Any questions regarding the project contact Matt Pate (mattpate at gmail.com) or Dan Catalano (daniel.w.catalano at gmail.com).
 
 ##Installation
-The application framework is currently installed on a virtual machine (VM) which acts as the development environment through the use of [Vagrant](http://www.vagrantup.com). There are only two requirements for the host machine to get started developing: 1) VirtualBox (4.2.16) and 2) Vagrant (1.2.4 -> up). This project can be developed on any OS so long as the two requirements are met. TO get started:
+The application framework is currently installed on a virtual machine (VM) which acts as the development environment through the use of [Vagrant](http://www.vagrantup.com). There are only two requirements for the host machine to get started developing: 1) VirtualBox (4.2.16) and 2) Vagrant (1.2.4 -> up). This project can be developed on any OS so long as the two requirements are met. To get started:
 
     git clone https://github.com/FireWeather/GRIBsherpa.git
 
