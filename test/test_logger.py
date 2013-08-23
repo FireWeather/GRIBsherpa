@@ -14,7 +14,7 @@ import lib.logger as logger
 class TestGlobal(unittest.TestCase):
 
     def test_logging_works_from_global(self):
-        logger.log.info("UnitTest: You should see this in the logfile")
+        logger.write.info("UnitTest: You should see this in the logfile")
 
 
 if __name__ == '__main__':

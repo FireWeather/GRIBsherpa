@@ -6,7 +6,7 @@
 # --------------------------------------------------------
 
 import psycopg2
-import lib.logger as logger
+import lib.logger
 
 
 ## This class manages all the database logic.  This includes connecting, logging, stored procedures, etc.
@@ -22,6 +22,7 @@ class RecordKeeper:
     #  Format: "dbname=test user=postgres password=something"
     #  see: http://initd.org/psycopg/docs/module.html
     def __init__(self, connection_string):
+        self.log = lib.logger
         self.connection_string = connection_string
 
     ## Gets a connection to the database. From Psycopg2 best practices: Creating a connection can be slow

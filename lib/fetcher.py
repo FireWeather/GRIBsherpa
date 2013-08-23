@@ -8,6 +8,7 @@
 import urllib.request
 import urllib.error
 import lib.url_parser
+import lib.logger
 import os
 import re
 
@@ -27,8 +28,8 @@ class Fetcher(object):
     ## @param args A dictionary of initialization params
     def __init__(self, args=None):
         self.url_parser = lib.url_parser.UrlParser()
-        self.url = self.__default_args("url", args) #optional url to download todo: remove this?
         self.store_loc = self.__default_args("store_loc", args)
+        self.log = lib.logger
 
 
     ## Downloads multiple grib files as specified by the parameters.
@@ -69,12 +70,8 @@ class Fetcher(object):
     # may need to be more flexible in the future...
     def __build_path_to_tmp(self):
         tmp_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'tmp/')
-        if os.path.exists(tmp_dir):
-            print("found tmp for storage: " + tmp_dir)
-            return tmp_dir
-        else:
-            print("ERROR in Fetcher.__build_path_to_tmp: tmp directory not found")
-            return None
+        assert(os.path.exists(tmp_dir))
+        return tmp_dir
 
 
     ## This is used to return meaningful default args in __init__. It contains particular
@@ -100,16 +97,14 @@ class Fetcher(object):
             store_loc = self.store_loc + file_name
         else:
             store_loc = self.store_loc + url
-        print("attempting to download to tmp: " + url)
+        self.log.write.info("Attempting to download to tmp: " + url)
         try:
             urllib.request.urlretrieve(url, store_loc)
         except urllib.error.URLError as err:
-            print(str(err))
-            return err
+            self.log.write.error(str(err))
         except urllib.error.HTTPError as err:
-            print(str(err))
-            return err
-        print("done")
+            self.log.write.error(str(err))
+        self.log.write.info("Success")
 
 
     # Takes an integer (fh) and returns a 3 char string representation of it.

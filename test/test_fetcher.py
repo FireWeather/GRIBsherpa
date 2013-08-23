@@ -32,14 +32,6 @@ class TestFetcher(unittest.TestCase):
     #written before you write the actual code. The idea is "red, green, refactor"
     #Python assertions: http://docs.python.org/3.3/library/unittest.html
     #great talk on TDD: http://www.confreaks.com/videos/2452-railsconf2013-the-magic-tricks-of-testing
-    def test_get_html_valid_url(self):
-        html = self.fetcher.get_html('www.google.com')
-        self.assertIsNot(html, IOError)
-
-    def test_get_html_invalid_url(self):
-        html = self.fetcher.get_html('www.hopefullythisurldoesntexist.com')
-        self.assertIsInstance(html, ValueError)
-
     # todo: figure out a way to assert downloads occured
     def test_download_gfs_files(self):
         self.fetcher.download_param_grib_range('gfs', self.mrDhour, 00, 6, 6, 0.5)

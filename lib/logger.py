@@ -28,12 +28,14 @@ import datetime
 log_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'log/')
 if not os.path.exists(log_dir):
     print("Error in logger::createLogFile - " + log_dir + " does not exist.")
+    # Set the config level and use the console for all output
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    # Create a logfile using today's date
+    logFile = log_dir + str(datetime.date.today()) + ".log"
 
-# Create a logfile using today's date
-logFile = log_dir + str(datetime.date.today()) + ".log"
-
-# Tell logging what it's file is and what it's default level is
-logging.basicConfig(filename=logFile, level=logging.INFO)
+    # Tell logging what it's file is and what it's default level is
+    logging.basicConfig(filename=logFile, level=logging.DEBUG)
 
 # Create an alias so we can call it in other modules.
 write = logging
