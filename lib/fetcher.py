@@ -33,38 +33,6 @@ class Fetcher(object):
         self.store_loc = self.__default_args("store_loc", args)
 
 
-    ## Opens url, reads it's contents, converts to string and returns (or returns error)
-    # @params url A string specifying the url to get_html for
-    def get_html(self, url):
-        try:
-            response = urllib.request.urlopen(url)
-        except urllib.error.HTTPError as err:
-            return err
-        except urllib.error.URLError as err:
-            return err
-        except ValueError as err:
-            return err
-        return str(response.readall())
-
-
-    ## Gets html string (of url), makes sure link exists within string, attempts to download it.
-    # Example Usage: mySpyder.download_file_by_link('gfs.t12z.goessimpgrb2f00.1p0deg')
-    def download_file_by_link(self, link, url):
-        html = self.get_html(url)
-        print("url response type: " + str(type(html)))
-        #link_exists = self.html_parser.grib_link_exists(link, html)
-        if self.html_parser.link_exists_in_html(link, html):
-            to_download = self.__build_link(url, link)
-            self.__download(to_download)
-        else:
-            print("link to download does not seem to exist.")
-
-
-    ## Downloads using the full url passed in (direct path to file).
-    def download_file_by_url(self, url):
-        self.__download(url)
-
-
     ## Downloads multiple grib files as specified by the parameters.
     # @param model_type:          String describing model type (ex. 'nam', 'gfs', etc.)
     # @param model_run_dateHour:  integer describing dateHour (YYYYMMDDHH, ex. 2013070100)
