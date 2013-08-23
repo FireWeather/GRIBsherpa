@@ -5,6 +5,7 @@
 # of this software for license terms.
 # --------------------------------------------------------
 import re
+import lib.logger as logger
 
 class UrlParser(object):
 
@@ -31,23 +32,23 @@ class UrlParser(object):
     #               "top": "toplat=",
     #               "bottom": "bottomlat="}
 
+    ## Create reference to logger to make future refactoring easier if logger changes
+    def __init__(self):
+        self.log = logger
 
     ## Creates a url to be used in downloading files.
     #  If using to create a 'gfs' url then a degree must be specified.
-    def build_download_url(self, model_type, mr_dateHour, forecast_hr, degree=None):
+    def build_download_url(self, model_type, mr_dateHour, forecast_hr, degree):
         if model_type.lower() == 'gfs':
-            if degree is None:
-                print("Error in url_parser::build_download_url - degree should not be None")
-                return
-            else:
-                partial_path = self.gfs[degree]
-                final_path = self.__build_path(partial_path, mr_dateHour, forecast_hr)
-                return final_path
+            partial_path = self.gfs[degree]
+            final_path = self.__build_path(partial_path, mr_dateHour, forecast_hr)
+            return final_path
         elif model_type.lower() == 'nam':
             partial_path = self.nam
             final_path = self.__build_path(partial_path, mr_dateHour, forecast_hr, 'nam')
             return final_path
         else:
+            self.log.write.error("In url_parser::build_download_url - unknown model type")
             print('Error in url_parser::build_download_url - unknown model type')
 
 

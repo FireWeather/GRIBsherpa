@@ -9,7 +9,14 @@
 # the logger is available to any modules that "import logging".  Since we don't have a main
 # yet but want the logger available everywhere, I've created and set the defaults here. Now
 # all you have to do is import this module and the logger will be available through:
-# > log.logging
+#
+# Usage: (in a module you want to have logging in)
+#   import lib.logger
+#   (In the init method for the class you want to use logging in, define "self.log = lib.logger")
+#   self.log.write("")          <-- this defaults to the default: "info"
+#   self.log.write.warning("")
+#   self.log.write.error("")
+#   self.log.write.debug("")
 
 
 import logging
@@ -29,6 +36,6 @@ logFile = log_dir + str(datetime.date.today()) + ".log"
 logging.basicConfig(filename=logFile, level=logging.INFO)
 
 # Create an alias so we can call it in other modules.
-log = logging
+write = logging
 
 
