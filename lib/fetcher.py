@@ -7,7 +7,6 @@
 
 import urllib.request
 import urllib.error
-import lib.html_parser
 import lib.url_parser
 import os
 import re
@@ -28,7 +27,6 @@ class Fetcher(object):
     ## @param args A dictionary of initialization params
     def __init__(self, args=None):
         self.url_parser = lib.url_parser.UrlParser()
-        self.html_parser = lib.html_parser.GribHtmlParser()
         self.url = self.__default_args("url", args) #optional url to download todo: remove this?
         self.store_loc = self.__default_args("store_loc", args)
 
