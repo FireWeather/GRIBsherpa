@@ -23,7 +23,7 @@ class RecordKeeper:
     #  see: http://initd.org/psycopg/docs/module.html
     def __init__(self, connection_string):
         self.log = lib.logger
-        self.connection_string = connection_string
+        self.connection_string = connection_string #todo decide on whether or not to hardcode this
 
     ## Gets a connection to the database. From Psycopg2 best practices: Creating a connection can be slow
     # (think of SSL over TCP) so the best practice is to create a single connection and keep it open as long
@@ -40,7 +40,8 @@ class RecordKeeper:
     # ----------------------------------- Procedures ----------------------------------------
     # My gut tells me that for now the best way to store our queries and insertions are as functions.
     # This will make changes easier and allow flexibility early until we get our design nailed down.
-
+    def insertGridPoints(self, region_num, region_ref_num, national_ref_num, location, table):
+        return "INSERT INTO {4} (region_number, region_ref_number, national_ref_number, location) VALUES ({0}, {1}, {2}, {3})".format(region_num, region_ref_num, national_ref_num, location, table)
 
 
 
