@@ -40,8 +40,12 @@ class RecordKeeper:
     # ----------------------------------- Procedures ----------------------------------------
     # My gut tells me that for now the best way to store our queries and insertions are as functions.
     # This will make changes easier and allow flexibility early until we get our design nailed down.
+
+    ## Used for inserting grid points
     def insertGridPoints(self, region_num, region_ref_num, national_ref_num, location, table):
-        return "INSERT INTO {4} (region_number, region_ref_number, national_ref_number, location) VALUES ({0}, {1}, {2}, {3})".format(region_num, region_ref_num, national_ref_num, location, table)
+        assert(self.dbConnection is not None)
+        cursor = self.dbConnection.cursor()
+        cursor.execute("INSERT INTO {4} (region_number, region_ref_number, national_ref_number, location) VALUES ({0}, {1}, {2}, {3})".format(region_num, region_ref_num, national_ref_num, location, table)
 
 
 
