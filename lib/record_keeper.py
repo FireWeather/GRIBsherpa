@@ -34,7 +34,8 @@ class RecordKeeper:
     def openDbConnection(self, connection_string):
         self.dbConnection = psycopg2.connect(connection_string)
 
-
+    def closeDbConnection(self):
+        self.dbConnection.close()
 
 
     # ----------------------------------- Procedures ----------------------------------------
@@ -46,7 +47,7 @@ class RecordKeeper:
         assert(self.dbConnection is not None)
         cursor = self.dbConnection.cursor()
         cursor.execute("INSERT INTO {4} (region_number, region_ref_number, national_ref_number, location) VALUES ({0}, {1}, {2}, {3})".format(region_num, region_ref_num, national_ref_num, location, table)
-
+        cursor.close()
 
 
 
