@@ -91,15 +91,8 @@ pip-3.3 install pygrib
 
 ##########################################################################
 cd $VAGRANT_DIR
-sudo -u postgres psql -e -f dbcreations.psql
-#sudo -u postgres createuser -e -s -d -r susherpa
-#sudo -u postgres createdb -e -O susherpa susherpa
-#echo "ALTER USER susherpa WITH PASSWORD 'susherpa';" | sudo -u susherpa psql postgres 
-
-#NOT FOR PRODUCTION / DEV USE ONLY
-#sudo -u postgres createuser -e -s -d -r vagrant
-#sudo -u postgres createdb -e -O vagrant vagrant
-#echo "ALTER USER vagrant WITH PASSWORD 'vagrant';" | sudo -u vagrant psql postgres 
+sudo -u postgres psql -e -f dbusersetup.psql
+sudo -u postgres psql -e -f dbstormking.psql
 service postgresql restart
 
 # next TEST ONLY

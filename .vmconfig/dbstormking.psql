@@ -5,18 +5,6 @@
 -- of this software for license terms.
 -- --------------------------------------------------------
 
-
--- DEV ONLY --
-CREATE USER vagrant;
-CREATE DATABASE vagrant OWNER vagrant;
-ALTER USER vagrant WITH PASSWORD 'vagrant';
--- END DEV ONLY --
-
-
-CREATE USER susherpa;
-CREATE DATABASE susherpa OWNER susherpa;
-ALTER USER susherpa WITH PASSWORD 'susherpa';
-
 CREATE DATABASE stormking OWNER susherpa;
 
 \c stormking
