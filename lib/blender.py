@@ -70,10 +70,9 @@ class Blender(object):
         return dict
 
 
-    # todo: make sure you understand how this works (numpy functionality)
     ## This looks for the closest coordinates to what we are looking for and, once found
     #  gets corresponding data fields.
-    #def getValues(self, lat, lon, message):
+    #  def getValues(self, lat, lon, message):
     #    # Get the coordinates closest to what we're looking for
     #    cords = [self.__findNearest(message['distinctLatitudes'], lat),
     #            self.__findNearest(message['distinctLongitudes'], lon)]
@@ -82,7 +81,7 @@ class Blender(object):
     #            'level': message['level'], 'level_units': message['typeOfLevel'], 'year': message['year'],
     #            'month': message['month'], 'day': message['day'], 'hour': message['hour']}
 
-    def getValues(self, lat, lon, message):
+    def getValuesAtPoint(self, lat, lon, message):
         return self.__interpolate(lat, lon, message)
 
 
