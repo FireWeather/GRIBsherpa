@@ -14,4 +14,6 @@ path.append('..')
 from lib.fetcher import Fetcher
 
 spider = Fetcher()
-spider.download_param_grib_range('gfs', 2013080300, 00, 240, 12, 0.5)
+spider.download_param_grib_range('gfs', 2013082400, 00, 240, 12, 1.0)
+spider.download_param_grib_range('gfs', 2013082400, 00, 240, 12, 0.5)
+#spider.download_param_grib_range('gfs', 2013080300, 00, 240, 12, 2.5)

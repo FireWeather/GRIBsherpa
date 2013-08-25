@@ -54,6 +54,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    config.vm.synced_folder "../lib/", "/grib/lib/"
    config.vm.synced_folder "../src/", "/grib/src/"
    config.vm.synced_folder "../doc/", "/grib/doc/"
+   config.vm.synced_folder "../data/", "/grib/data/"
    config.vm.synced_folder "../test/", "/grib/test/"
    config.vm.synced_folder "../log/", "/grib/log/"
 
