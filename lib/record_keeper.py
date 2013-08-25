@@ -11,8 +11,8 @@ import socket
 
 ## This class manages all the database logic.  This includes connecting, logging, stored procedures, etc.
 #  It is expected to be called primarily to store data coming in from the blender class.  Best guess is that
-#  this class will be called with multiple threads.  The postgresql connection is thread safe and therefore
-#  should be the only class variable.  (A cursor should be opened "locally" for each read/write)
+#  this class will be called with multiple threads.  The postgresql connection is thread safe. A cursor should be
+#  opened "locally" for each read/write)
 class RecordKeeper:
 
     ## The is the database connection that will be opened and closed and used by the methods below
