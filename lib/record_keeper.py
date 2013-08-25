@@ -15,23 +15,23 @@ import socket
 #  should be the only class variable.  (A cursor should be opened "locally" for each read/write)
 class RecordKeeper:
 
-    ## This is thread safe and is slow to create so BP's are to share this amongst threads.
+    ## The is the database connection that will be opened and closed and used by the methods below
     dbConnection = None
 
 
-    ## Sets the connection string to be used in opening and closing the db connection
-    #  Format: "dbname=stormking user=susherpa password=something"
+    ## This accepts "connection_string".  It appends the host to the connection_string.
+    #  Format of connection_string should be: "dbname=stormking user=susherpa password=susherpa"
     def __init__(self, connection_string):
         self.log = lib.logger
         self.connection_string = self.__appendHostTo(connection_string)
 
 
-    ## Gets a connection to the database. From Psycopg2 best practices: Creating a connection can be slow
-    # (think of SSL over TCP) so the best practice is to create a single connection and keep it open as long
-    # as required. It is also good practice to rollback or commit frequently (even after a single SELECT statement)
-    # to make sure the backend is never left "idle in transaction".  Connections are thread safe and can be
-    # shared across multiple threads.
-    # If the connection can't be opened, failure is logged and then the error is passed up...
+    ## Opens a connection to the database.  Creating a connection is slow and so this should be kept open if multiple
+    #  transactions will take place.  Connections are threadsafe and so it does not matter if there are multiple
+    #  RecordKeeper classes each with their own connection.  From the docs: It is also good practice to rollback or
+    #  commit frequently (even after a single SELECT statement to make sure the backend is never left "idle in
+    #  transaction".  Connections are thread safe and can be
+    #  If the connection can't be opened, failure is logged and then the error is passed up...
     def openDbConnection(self):
         try:
             self.dbConnection = psycopg2.connect(self.connection_string)
@@ -58,10 +58,6 @@ class RecordKeeper:
         cursor.execute("INSERT INTO {4} (region_number, region_ref_number, national_ref_number, location) "
                        "VALUES ({0}, {1}, {2}, {3})".format(region_num, region_ref_num, national_ref_num, location, table))
         cursor.close()
-
-
-    ## Used for inserting data gathered by the blender
-    #  ?'s What do we do about null fields?,
 
 
 
