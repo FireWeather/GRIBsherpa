@@ -9,6 +9,7 @@ import pygrib
 import psycopg2
 import os
 import numpy
+from scipy import interpolate
 import csv
 
 
@@ -70,20 +71,29 @@ class Blender(object):
         return dict
 
 
-    ## This looks for the closest coordinates to what we are looking for and, once found
-    #  gets corresponding data fields.
-    #  def getValues(self, lat, lon, message):
-    #    # Get the coordinates closest to what we're looking for
-    #    cords = [self.__findNearest(message['distinctLatitudes'], lat),
-    #            self.__findNearest(message['distinctLongitudes'], lon)]
-    #    val = message.values[cords[0], cords[1]]
-    #    return {'lat': cords[0], 'lon': cords[1], 'val': val, 'name': message['name'], 'val_units': message['units'],
-    #            'level': message['level'], 'level_units': message['typeOfLevel'], 'year': message['year'],
-    #            'month': message['month'], 'day': message['day'], 'hour': message['hour']}
+    ## This returns data for a specific point in a grid.  If data is requested for a point that doesn't exist
+    #  within the message then interpolation will be performed.
+    def getValuesAtPoint(self, lat, lon, message, type):
+        points = self.__formLatLonPairs(message["latitudes"], message["longitudes"])
+        lats, lons = message["latitudes"], message["longitudes"]
+        values = message["values"]
 
-    def getValuesAtPoint(self, lat, lon, message):
-        return self.__interpolate(lat, lon, message)
+        # Check if the lat, lon we want data for is actually in the message, if not, continue below
+        for point in points:
+            if point == [lat, lon]:
+                return message["values"][points.index(point)]
 
+        # Grid data should be used on unstructured data where points are not necessarily uniform or known.
+        # If the data is structured rectbivariatespline should be used.
+        # Todo: remove this note: http://stackoverflow.com/questions/5146025/python-scipy-2d-interpolation-non-uniform-data
+        if type.toLower == "griddata":
+            pass
+
+        # This works for "structured" data where all values on a grid are known.  Issues can arise if this
+        # is used on a grid where data is missing.  In that case interp2d or griddata should be used.
+        elif type.toLower == "rectbivariatespline":
+            grid = interpolate.RectBivariateSpline(lats, lons, values)
+            return grid[lat, lon]
 
 
     # ----------------------------------- Private ------------------------------------
@@ -96,20 +106,6 @@ class Blender(object):
         return self.__formLatLonPairs(numpyLats, numpyLons)
 
     # ----------------------------- End Test Doubles ---------------------------------
-
-
-    ## This solution for finding the nearest value in a numpy array came from stackoverflow.
-    #  http://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-    #def __findNearest(self, array, value):
-    #   index = (numpy.abs(array-value)).argmin()
-    #    return array[index]
-
-    def __interpolate(self, lat, lon, message):
-        # Form array of tuples of lat lon pairs
-        points = self.__formLatLonPairs(message["latitudes"], message["longitudes"])
-        values = message["values"]
-        xi = [lat, lon]
-
 
     ## Takes two numpy arrays and combines them into tuples
     #  @return    array of tuples corresponding to lat lon pairs
@@ -161,7 +157,6 @@ class Blender(object):
             print("Error in blender::__openGrib - File Not found")
             return
         return f
-
 
 
 

@@ -57,6 +57,7 @@ class RecordKeeper:
         cursor = self.dbConnection.cursor()
         cursor.execute("INSERT INTO {4} (region_number, region_ref_number, national_ref_number, location) "
                        "VALUES ({0}, {1}, {2}, {3})".format(region_num, region_ref_num, national_ref_num, location, table))
+        # Todo: add cursor.commit() here?
         cursor.close()
 
 
