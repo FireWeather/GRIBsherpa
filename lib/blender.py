@@ -9,8 +9,7 @@ import pygrib
 import psycopg2
 import os
 import numpy
-from scipy import interpolate
-import csv
+import scipy
 
 
 ## This class wraps pygrib functionality and breaks data down in a way that can then be stored in the database.
@@ -73,8 +72,8 @@ class Blender(object):
 
     ## This returns data for a specific point in a grid.  If data is requested for a point that doesn't exist
     #  within the message then interpolation will be performed.
-    def getValuesAtPoint(self, lat, lon, message, type):
-        points = self.__formLatLonPairs(message["latitudes"], message["longitudes"])
+    def getValuesAtPoint(self, lat, lon, message, function):
+        points = self.formLatLonPairs(message["latitudes"], message["longitudes"])
         lats, lons = message["latitudes"], message["longitudes"]
         values = message["values"]
 
@@ -83,33 +82,46 @@ class Blender(object):
             if point == [lat, lon]:
                 return message["values"][points.index(point)]
 
-        # Grid data should be used on unstructured data where points are not necessarily uniform or known.
-        # If the data is structured rectbivariatespline should be used.
-        # Todo: remove this note: http://stackoverflow.com/questions/5146025/python-scipy-2d-interpolation-non-uniform-data
-        if type.toLower == "griddata":
-            pass
-
-        # This works for "structured" data where all values on a grid are known.  Issues can arise if this
-        # is used on a grid where data is missing.  In that case interp2d or griddata should be used.
-        elif type.toLower == "rectbivariatespline":
-            grid = interpolate.RectBivariateSpline(lats, lons, values)
-            return grid[lat, lon]
+        # Not found so return interpolation
+        return function(lat, lon, message)
 
 
-    # ----------------------------------- Private ------------------------------------
+    def rectSphereBivariateSpline(self, lat, lon, message):
+        lats, lons, vals = self.getScipyValues(message)
+        interp = scipy.interpolate.RectSphereBivariateSpline(lats, lons, vals)
+        return interp[lat, lon]
 
-    # -------------------------------- Test Doubles ----------------------------------
-    # The following methods are test dummies for verifying/testing private methods.
-    #  They should be commented out (as should their tests) once debugging is finalized.
-    # todo: comment these out
-    def formLatLonPairs(self, numpyLats, numpyLons):
-        return self.__formLatLonPairs(numpyLats, numpyLons)
 
-    # ----------------------------- End Test Doubles ---------------------------------
+    ## Returns values (sorted lats, sorted lons, value pairs) in required format of Scipy.
+    def getScipyValues(self, message):
+        # Loop through array of [lat1, lon1, value1, ...] building mapped structure. Increment each
+        # index (lat, lon, val) by 3
+        lat, lon, val = 0, 1, 2
+        mapped_lats, mapped_lons = {}, {}
+        latLonValues = message["latLonValues"]
+        while val < latLonValues.size:
+            mapped_lats[latLonValues[lat]] = latLonValues[val]
+            mapped_lons[latLonValues[lon]] = latLonValues[val]
+            lat += 3
+            lon += 3
+            val += 3
+        # Loop through sorted lat/lon arrays building 2d array of vals correponding to lat/lon
+        # lats = [lat0, lat1, ...] lons = [lon0, lon1, ...] mapped_vals = [lat0.val, lon0.val]
+        lats = numpy.sort(message["latitudes"], 'mergesort')
+        lons = numpy.sort(message["longitudes"], 'mergesort')
+        index = 0
+        mapped_vals = []
+        while index < (lats.size - 1):
+            mapped_vals.append(mapped_lats[lats[index]], mapped_lons[lons[index]])
+            index += 1
+
+        # Returns sorted lats, sorted lons, mapped values
+        return lats, lons, mapped_vals
+
 
     ## Takes two numpy arrays and combines them into tuples
     #  @return    array of tuples corresponding to lat lon pairs
-    def __formLatLonPairs(self, numpyLats, numpyLons):
+    def formLatLonPairs(self, numpyLats, numpyLons):
         latLons = []
         index = 0
         for item in numpyLats:
@@ -119,6 +131,7 @@ class Blender(object):
         return latLons
 
 
+# ---------------------------------------------- PRIVATE -------------------------------------------------
     ## Gets the msg from grib.
     # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
     # @return List of messages found
@@ -134,19 +147,6 @@ class Blender(object):
             print(err)
             return err
         return msgs
-
-    ## Import the lat/lon values we are looking for as specified in CSV files
-    def __importCsvLatLon(self, csv_file):
-        values = []
-        try:
-            f = open(csv, 'r')
-        except FileNotFoundError as err:
-            print("Error in url_parser::__importCsvLatLon - csv file not found")
-            return
-        reader = csv.reader(f)
-        for row in reader:
-            values.append([row[1], row[2]])
-        return values
 
 
     ## This wraps Pygrib.open in a try catch block.
