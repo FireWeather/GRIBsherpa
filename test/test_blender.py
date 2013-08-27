@@ -14,9 +14,9 @@ class TestBlender(unittest.TestCase):
 
     def setUp(self):
         self.blender = lib.blender.Blender()
-        self.grib = './grib.grib2'
+        self.gribFile = './grib.grib2'
         self.arr = [1,2,3,4,5]
-        self.grib = pygrib.open(self.grib)
+        self.grib = pygrib.open(self.gribFile)
         self.temps = self.grib.select(name="Temperature")[0]
 
 
@@ -24,7 +24,7 @@ class TestBlender(unittest.TestCase):
         pass
 
     def test_get_messages_valid(self):
-        message = self.blender.getMessages('Temperature', self.grib)
+        message = self.blender.getMessages('Temperature', self.gribFile)
         self.assertIsInstance(message, list)
 
 
@@ -39,13 +39,17 @@ class TestBlender(unittest.TestCase):
         lons = self.temps["longitudes"][:10]
 
 
+    def test_getValuesAtPoint_with_iRectBivariateSpline(self):
+        val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iRectBivariateSpline)
+        print("\n" + str(val) + "\n")
+
     def test_getValuesAtPoint_with_iNoInterp(self):
         val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iNoInterp)
         print("\n" + str(val) + "\n")
 
-    def test_getValuesAtPoint_with_iRectSphereBivariateSpline(self):
-        val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iRectSphereBivariateSpline)
-        print("\n" + str(val) + "\n")
+    # def test_getValuesAtPoint_with_iRectSphereBivariateSpline(self):
+    #     val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iRectSphereBivariateSpline)
+    #     print("\n" + str(val) + "\n")
 
 
 

@@ -92,6 +92,11 @@ class Blender(object):
         interp = scipy.interpolate.RectSphereBivariateSpline(lats, lons, vals)
         return interp[lat, lon]
 
+    def iRectBivariateSpline(self, lat, lon, message):
+        lats, lons, vals = self.getScipyValues(message)
+        interp = scipy.interpolate.RectBivariateSpline(lats, lons, vals)
+        return interp[lat, lon]
+
     def iNoInterp(self, lat, lon, message):
         vals = message["values"]
         return vals[lat][lon]
@@ -122,10 +127,8 @@ class Blender(object):
         # Todo: rectSphereBiv takes radians from 0-Pi, pair on finishing the below conversion
         # numpy factory "vectorize"
         convertToRadians = numpy.vectorize(self.__convertToRadians)
-        print(lats[:10])
-        print(lons[:10])
         l = convertToRadians(lats[:10])
-        print(l)
+
         return lats, lons, mapped_vals
 
 
