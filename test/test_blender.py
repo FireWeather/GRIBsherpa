@@ -8,6 +8,7 @@
 import unittest
 import numpy
 import lib.blender
+import pygrib
 
 class TestBlender(unittest.TestCase):
 
@@ -15,6 +16,8 @@ class TestBlender(unittest.TestCase):
         self.blender = lib.blender.Blender()
         self.grib = './grib.grib2'
         self.arr = [1,2,3,4,5]
+        self.grib = pygrib.open(self.grib)
+        self.temps = self.grib.select(name="Temperature")[0]
 
 
     def tearDown(self):
@@ -24,18 +27,27 @@ class TestBlender(unittest.TestCase):
         message = self.blender.getMessages('Temperature', self.grib)
         self.assertIsInstance(message, list)
 
-    def test_get_values(self):
-        # Note I'm getting the first message in the list here
-        message = self.blender.getMessages('Temperature', self.grib)[0]
-        vals = self.blender.getValues(90, 270, message)
-        print(vals)
-        # todo: add assertion here
 
     def test_form_lat_lon_pairs(self):
         #create a numpy array
         vals = numpy.array([1,2,3,4,5])
         result = self.blender.formLatLonPairs(vals, vals)
         self.assertEqual(result, [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]])
+
+    def test_getScipyValues(self):
+        lats = self.temps["latitudes"][:10]
+        lons = self.temps["longitudes"][:10]
+
+
+    def test_getValuesAtPoint_with_iNoInterp(self):
+        val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iNoInterp)
+        print("\n" + str(val) + "\n")
+
+    def test_getValuesAtPoint_with_iRectSphereBivariateSpline(self):
+        val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iRectSphereBivariateSpline)
+        print("\n" + str(val) + "\n")
+
+
 
 
 

@@ -8,8 +8,9 @@
 import pygrib
 import psycopg2
 import os
+import math
 import numpy
-import scipy
+import scipy.interpolate
 
 
 ## This class wraps pygrib functionality and breaks data down in a way that can then be stored in the database.
@@ -86,11 +87,14 @@ class Blender(object):
         return function(lat, lon, message)
 
 
-    def rectSphereBivariateSpline(self, lat, lon, message):
+    def iRectSphereBivariateSpline(self, lat, lon, message):
         lats, lons, vals = self.getScipyValues(message)
         interp = scipy.interpolate.RectSphereBivariateSpline(lats, lons, vals)
         return interp[lat, lon]
 
+    def iNoInterp(self, lat, lon, message):
+        vals = message["values"]
+        return vals[lat][lon]
 
     ## Returns values (sorted lats, sorted lons, value pairs) in required format of Scipy.
     def getScipyValues(self, message):
@@ -107,15 +111,21 @@ class Blender(object):
             val += 3
         # Loop through sorted lat/lon arrays building 2d array of vals correponding to lat/lon
         # lats = [lat0, lat1, ...] lons = [lon0, lon1, ...] mapped_vals = [lat0.val, lon0.val]
-        lats = numpy.sort(message["latitudes"], 'mergesort')
-        lons = numpy.sort(message["longitudes"], 'mergesort')
+        lats = numpy.sort(message["latitudes"], None, 'mergesort')
+        lons = numpy.sort(message["longitudes"], None, 'mergesort')
         index = 0
         mapped_vals = []
         while index < (lats.size - 1):
-            mapped_vals.append(mapped_lats[lats[index]], mapped_lons[lons[index]])
+            mapped_vals.append([mapped_lats[lats[index]], mapped_lons[lons[index]]])
             index += 1
 
-        # Returns sorted lats, sorted lons, mapped values
+        # Todo: rectSphereBiv takes radians from 0-Pi, pair on finishing the below conversion
+        # numpy factory "vectorize"
+        convertToRadians = numpy.vectorize(self.__convertToRadians)
+        print(lats[:10])
+        print(lons[:10])
+        l = convertToRadians(lats[:10])
+        print(l)
         return lats, lons, mapped_vals
 
 
@@ -148,6 +158,9 @@ class Blender(object):
             return err
         return msgs
 
+    ## Returns a radian representation of the degree number passed in.
+    def __convertToRadians(self, degree_num):
+        return math.radians(degree_num)
 
     ## This wraps Pygrib.open in a try catch block.
     def __openGrib(self, file):
