@@ -10,7 +10,6 @@
 
 from sys import path
 path.append('..')
-
 from lib.fetcher import Fetcher
 
 spider = Fetcher()
