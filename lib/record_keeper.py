@@ -69,4 +69,4 @@ class RecordKeeper:
     def __appendHostTo(self, connection_string):
         ipAddress = socket.gethostbyname(socket.gethostname())
         self.log.write.info("In RecordKeeper, IP address is: " + str(ipAddress))
-        return connection_string + "host=" + str(ipAddress)
+        return connection_string + " host=" + str(ipAddress)
