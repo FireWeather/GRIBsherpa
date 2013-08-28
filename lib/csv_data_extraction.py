@@ -17,7 +17,7 @@ class CsvDataExtraction(object):
             exit(1)
         temp = open(self.filename)
         self.dict = csv.DictReader(temp)
-        temp.close()
+        # temp.close()
 
     def getCSVDict(self):
         return self.dict
