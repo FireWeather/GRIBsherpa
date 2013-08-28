@@ -35,14 +35,16 @@ CREATE TABLE met_param (
   met_param_pkey SERIAL PRIMARY KEY
 );
 
-CREATE TABLE regions (
-  region_name text NOT NULL, 
-  region_number smallint NOT NULL UNIQUE PRIMARY KEY
+CREATE TABLE region (
+  region_name text NOT NULL,
+  region_abbv text NOT NULL,
+  fs_region_num smallint NOT NULL,
+  region_pkey SERIAL PRIMARY KEY
 );
 
 CREATE TABLE model_grid_points (
   model_grid_points_pkey SERIAL PRIMARY KEY, 
-  region_number smallint NOT NULL REFERENCES regions (region_number), 
+  region_pkey smallint NOT NULL REFERENCES region (region_pkey),
   region_ref_number smallint NOT NULL, 
   national_ref_number smallint UNIQUE, 
   location geography(POINT,4326)
