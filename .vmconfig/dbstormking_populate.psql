@@ -5,8 +5,6 @@
 -- of this software for license terms.
 -- --------------------------------------------------------
 
-CREATE DATABASE stormking OWNER susherpa;
-
 \c stormking
 CREATE EXTENSION postgis;
 
@@ -37,7 +35,7 @@ CREATE TABLE met_param (
 
 CREATE TABLE region (
   region_name text NOT NULL,
-  region_abbv text NOT NULL,
+  region_abbv text UNIQUE NOT NULL,
   fs_region_num smallint NOT NULL,
   region_pkey SERIAL PRIMARY KEY
 );
