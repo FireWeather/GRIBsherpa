@@ -40,10 +40,12 @@ CREATE TABLE region (
   region_pkey SERIAL PRIMARY KEY
 );
 
+-- TODO create uniqueness in region_ref_number & regional_grid
 CREATE TABLE model_grid_points (
   model_grid_points_pkey SERIAL PRIMARY KEY, 
   region_pkey smallint NOT NULL REFERENCES region (region_pkey),
   region_ref_number smallint NOT NULL, 
+  regional_grid text,
   national_ref_number smallint UNIQUE, 
   location geography(POINT,4326)
 );

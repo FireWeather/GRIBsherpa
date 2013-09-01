@@ -21,9 +21,3 @@ class CsvDataExtraction(object):
 
     def getCSVDict(self):
         return self.dict
-
-    def displayCSVDict(self):
-        for temp in self.dict:
-            print(str(temp))
-        print(str(self.dict.fieldnames))
-        print(str(self.dict.dialect))

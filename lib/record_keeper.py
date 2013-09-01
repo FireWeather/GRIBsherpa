@@ -17,13 +17,14 @@ class RecordKeeper:
 
     ## The is the database connection that will be opened and closed and used by the methods below
     dbConnection = None
-
+    index = None
 
     ## This accepts "connection_string".  It appends the host to the connection_string.
     #  Format of connection_string should be: "dbname=stormking user=susherpa password=susherpa"
     def __init__(self, connection_string):
         self.log = lib.logger
         self.connection_string = self.__appendHostTo(connection_string)
+        self.index = 1;
 
 
     ## Opens a connection to the database.  Creating a connection is slow and so this should be kept open if multiple
@@ -60,7 +61,59 @@ class RecordKeeper:
         # Todo: add cursor.commit() here?
         cursor.close()
 
+    # TODO document
+    def insertRegionData(self, cde):
+        dictOfCSVData = cde.getCSVDict()
+        assert(self.dbConnection is not None)
+        cur = self.dbConnection.cursor();
 
+        for i in dictOfCSVData:
+            SQL = "INSERT INTO region (region_name, region_abbv, fs_region_num) VALUES (%s, %s, %s);"
+            data = (i.get('fullName'), i.get('abbreviation'), i.get('fsRegion'), )
+            cur.execute(SQL, data)
+
+        self.dbConnection.commit()
+        cur.close()
+
+    def insertGeoData(self, cde, region, grid=None):
+        dictOfCSVData = cde.getCSVDict()
+        assert(self.dbConnection is not None)
+        cur = self.dbConnection.cursor();
+
+        for i in dictOfCSVData:
+            SQL = "SELECT region_pkey FROM region WHERE region_abbv = (%s);"
+            data = (region, )
+            cur.execute(SQL, data)
+            # print(cur.fetchall())
+            region_pkey = cur.fetchone()
+
+            pointDataLat = i.get('lat')
+            pointDataLon = i.get('long')
+
+            if grid is None:
+                SQL = "INSERT INTO model_grid_points (region_pkey, region_ref_number, national_ref_number, " \
+                      "location) VALUES (%s, %s, %s, ST_GeographyFromText(%s));"
+
+                print(str(region_pkey) + ' ' + str(i.get('id')) + ' ' + str(self.index) + ' ' + str('POINT(' + pointDataLon + ' ' + pointDataLat + ')'))
+                data = (region_pkey, i.get('id'), self.index, 'POINT(' + pointDataLon + ' ' + pointDataLat + ')', )
+            else:
+                SQL = "INSERT INTO model_grid_points (region_pkey, region_ref_number, national_ref_number, " \
+                      "location, regional_grid) VALUES (%s, %s, %s, ST_GeographyFromText(%s), %s);"
+
+                print(str(region_pkey))
+                print(str(i.get('id')))
+                print(str(self.index))
+                print(str('POINT(' + pointDataLon + ' ' + pointDataLat + ')'))
+                print(str(grid))
+                print(str(region_pkey) + ' ' + str(i.get('id')) + ' ' + str(self.index) + ' ' + str('POINT(' + pointDataLon + ' ' + pointDataLat + ')') + ' ' + str(grid))
+                print('\n')
+                data = (region_pkey, i.get('id'), self.index, 'POINT(' + pointDataLon + ' ' + pointDataLat + ')', grid, )
+
+            cur.execute(SQL, data)
+            self.index += 1
+
+        self.dbConnection.commit();
+        cur.close()
 
     # -------------------------------- Private -------------------------------------
 
