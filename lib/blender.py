@@ -32,6 +32,17 @@ class Blender(object):
     # Note that some of these fields (latitudes for example) will contain multiple values.
     FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
 
+    #todo figure out the return type here and clean up comments
+    ## This is the work horse of the blender class.  It searches the grib for matching messages and returns a <??>
+    #  of all data found for the matching fields.  If the msgs and fields params are left as None, the above
+    #  hardcoded values will be used (MOI, FOI)
+    #  @param msgs      The messages to look for. Type: Array
+    #  @param fields    The fields to return for each message. Type: Array
+    #  @param grib      The grib file to use. Type: grib
+    #  @return          Returns a <type> of all data found
+    def getAllData(self, grib, msgs=None, fields=None):
+        # todo fill this in.  figure out type of struct to return
+        pass
 
     ## Returns a list of all matching messages found. Msgs can either be a
     #  single message type (ex. "Temperature") or it can be a list of messages
