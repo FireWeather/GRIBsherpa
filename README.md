@@ -52,12 +52,12 @@ The below details (loosely) the plan of attack for the project.
 
 |Item        |Priority       |Status        |Owner          |
 |------------|:-------------:|:------------:|:-------------:|
-|Move logging functionality off the terminal | Low | In progress | Owner: Matt
+|Move logging functionality off the terminal | Low | In progress | Matt
 |Finalize method for interpolation | High | 
-|Create db interface class using psycopg2 | High | In progress | Owner: Matt & Dan
+|Create db interface class using psycopg2 | High | In progress | Matt & Dan
 |Verify db insertions work well | High | In Progress
-|Create extraction set in blender for database entry | High | In progress | Owner: Matt
-|Work on end vison of Chron (and design additional "control" modules as necessary) | Low/Med | | Owner: Matt & Dan
+|Create extraction set in blender for database entry | High | In progress | Matt
+|Work on end vison of Chron (and design additional "control" modules as necessary) | Low/Med | | Matt & Dan
 
 
 
