@@ -9,6 +9,9 @@
 import unittest
 #import the class you want to test
 import lib.fetcher
+#import any accessories
+import time
+from datetime import date
 
 #idiomatic way to name your test. Be sure to include "(unittest.TestCase)"
 class TestFetcher(unittest.TestCase):
@@ -18,7 +21,25 @@ class TestFetcher(unittest.TestCase):
     #tests can take parameters except for "(self)"
     def setUp(self):
         self.fetcher = lib.fetcher.Fetcher()
-        self.mrDhour = 2013080300
+
+        # This builds a model-run-date-hour that corresponds to today and the first hour
+        tmpD = "2013"
+        day = date.today().day
+        month = date.today().month
+        if month < 10:
+            tmpD += ("0" + str(month))
+        else:
+            tmpD += str(month)
+        if day < 10:
+            tmpD += ("0" + str(day))
+        else:
+            tmpD += str(day)
+        tmpD += "00"
+
+        self.mrDhour = int(tmpD)
+
+
+
 
     #get rid of anything you created for testing that you don't want to live on. I usually would use this
     #for cleaning up files or temporary folders or something.

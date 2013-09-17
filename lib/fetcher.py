@@ -8,7 +8,7 @@
 import urllib.request
 import urllib.error
 import lib.url_parser
-import lib.logger
+import lib.logger as log
 import os
 import re
 
@@ -29,7 +29,6 @@ class Fetcher(object):
     def __init__(self, args=None):
         self.url_parser = lib.url_parser.UrlParser()
         self.store_loc = self.__default_args("store_loc", args)
-        self.log = lib.logger
 
 
     ## Downloads multiple grib files as specified by the parameters.
@@ -90,21 +89,24 @@ class Fetcher(object):
     # 1. expects there to be a temp directory
     # 2. builds storage file path based on tmp path and the url being downloaded (or file_name passed in)
     # 3. attempts to download file
-    # 4. return err if encountered or prints "done" to console
+    # 4. Logs success or failure and prints to console upon success (to aid in visual aspect of tests)
     def __download(self, url, file_name=None):
         store_loc = ""
         if file_name is not None:
             store_loc = self.store_loc + file_name
         else:
             store_loc = self.store_loc + url
-        self.log.write.info("Attempting to download to tmp: " + url)
+        log.write.info("Attempting to download to tmp: " + url)
         try:
             urllib.request.urlretrieve(url, store_loc)
         except urllib.error.URLError as err:
-            self.log.write.error(str(err))
+            log.write.error(str(err))
+            return
         except urllib.error.HTTPError as err:
-            self.log.write.error(str(err))
-        self.log.write.info("Success")
+            log.write.error(str(err))
+            return
+        log.write.info("Success")
+        print("Success")
 
 
     # Takes an integer (fh) and returns a 3 char string representation of it.
