@@ -50,12 +50,14 @@ Note: initially this project was going to utilize Ubuntu 12.04 LTS, however, iss
 ##Project Plan
 The below details (loosely) the plan of attack for the project.  
 
-|Item        |Priority       |Status      |
-|------------|:-------------:|------------|
-|Move logging functionality off the terminal | High | In progress
+|Item        |Priority       |Status        |Owner          |
+|------------|:-------------:|:------------:|:-------------:|
+|Move logging functionality off the terminal | Low | In progress | Matt
 |Finalize method for interpolation | High | 
-|Create db interface class using psycopg2 | High | In progress
-|Verify db insertions work well | High | 
+|Create db interface class using psycopg2 | High | In progress | Matt & Dan
+|Verify db insertions work well | High | In Progress
+|Create extraction set in blender for database entry | High | In progress | Matt
+|Work on end vison of Chron (and design additional "control" modules as necessary) | Low/Med | | Matt & Dan
 
 
 
