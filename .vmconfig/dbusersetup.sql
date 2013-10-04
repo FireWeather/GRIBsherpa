@@ -9,8 +9,10 @@
 CREATE USER vagrant;
 CREATE DATABASE vagrant OWNER vagrant;
 ALTER USER vagrant WITH PASSWORD 'vagrant';
+ALTER USER vagrant SUPERUSER;
 -- END DEV ONLY --
 
 CREATE USER susherpa;
 CREATE DATABASE susherpa OWNER susherpa;
 ALTER USER susherpa WITH PASSWORD 'susherpa';
+ALTER USER susherpa SUPERUSER;

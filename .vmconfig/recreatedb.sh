@@ -6,6 +6,6 @@
 # of this software for license terms.
 # --------------------------------------------------------
 
-sudo -u postgres  dropdb stormking
+sudo -u postgres dropdb stormking
 sudo -u postgres psql -e -f dbstormking_create.sql
 sudo -u susherpa psql -e -f dbstormking_populate.sql
