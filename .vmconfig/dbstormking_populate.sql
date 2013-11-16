@@ -56,4 +56,14 @@ CREATE TABLE met_data (
     met_param_pkey smallint NOT NULL REFERENCES met_param (met_param_pkey),
     model_grid_points_pkey integer NOT NULL REFERENCES model_grid_points (model_grid_points_pkey), 
     model_forecast_relation_pkey integer NOT NULL REFERENCES model_forecast_relation (model_forecast_relation_pkey) 
-);   
+);
+
+CREATE TABLE message_types (
+    message_types_pkey SERIAL PRIMARY KEY,
+    name text UNIQUE NOT NULL
+);
+
+CREATE TABLE field_types (
+    field_types_pkey SERIAL PRIMARY KEY,
+    name text UNIQUE NOT NULL
+);
