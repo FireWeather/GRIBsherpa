@@ -93,7 +93,7 @@ pip-3.3 install pygrib
 cd $VAGRANT_DIR
 sudo -u postgres psql -e -f dbusersetup.sql
 sudo -u postgres psql -e -f dbstormking_create.sql
-sudo -u susherpa psql -e -f dbstormking_populate.sql
+sudo -u susherpa psql -e -f dbstormking_create_schema.sql
 service postgresql restart
 
 # next TEST ONLY
