@@ -115,6 +115,36 @@ class RecordKeeper:
         self.dbConnection.commit();
         cur.close()
 
+
+    ## This is used for inserting "general" data.
+    #  tableName    string - the name of the table
+    #  columns      array[string] - column names
+    #  values       array[Any] - values to enter
+    #  Note: types defined in array will be what's entered into database. This
+    #  may or may not cause a problem if you're trying to insert odd or very
+    #  specific types.
+    def generalInsert(self, tableName, columns, values):
+        sql = "INSERT INTO " + tableName + " ("
+        assert(self.dbConnection is not None)
+        cur = self.dbConnection.cursor()
+
+        # build sql string from params
+        for i in columns:
+            if i == columns[-1]:
+                sql += i + ") VALUES "
+            else:
+                sql += i + ", "
+        for i in values:
+            if i == values[-1]:
+                sql += i + ");"
+            else:
+                sql += i + ", "
+
+        cur.execute(sql)
+        self.dbConnection.commit()
+        cur.close()
+
+
     # -------------------------------- Private -------------------------------------
 
     ## This uses the "socket" library to get the current IP address of the computer.  It appends this
