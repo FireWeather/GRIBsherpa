@@ -5,12 +5,14 @@
 # of this software for license terms.
 # --------------------------------------------------------
 
+import urllib.error
 import pygrib
 import psycopg2
 import os
 import math
 import numpy
 import scipy.interpolate
+import lib.logger as log
 
 
 ## This class wraps pygrib functionality and breaks data down in a way that can then be stored in the database.
@@ -32,7 +34,19 @@ class Blender(object):
     # Note that some of these fields (latitudes for example) will contain multiple values.
     FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
 
-    #todo figure out the return type here and clean up comments
+
+    def getAllData(self, gribPath, messages, fields):
+        dataStruct = {}
+        gribFile = self.__openGrib(gribPath)
+
+        for msg in messages:
+            dataStruct[msg] =
+
+
+
+
+
+    # TODO: clean up comments
     ## This is the work horse of the blender class.  It searches the grib for matching messages and returns a <??>
     #  of all data found for the matching fields.  If the msgs and fields params are left as None, the above
     #  hardcoded values will be used (MOI, FOI)
@@ -40,9 +54,43 @@ class Blender(object):
     #  @param fields    The fields to return for each message. Type: Array
     #  @param grib      The grib file to use. Type: grib
     #  @return          Returns a <type> of all data found
-    def getAllData(self, grib, msgs=None, fields=None):
-        # todo fill this in.  figure out type of struct to return
-        pass
+    #
+    # { "Geopotential Height" : [
+    #                             { level : 500, units : "mbar", "120, 95" : 243, "120, 94" : 243, "120, 93" : 243, ... },
+    #                             { level : 550, units : "mbar", "120, 95" : 243, "120, 94" : 243, "120, 93" : 243, ... },
+    #                           ],
+    #   "Precipital Water"    : [
+    #                             { level : ..... }
+    #                           ]
+    # }
+    #
+    def getSpecificData(self, gribPath, latLons, msgs=None, fields=None):
+        toReturn = {}
+        gribMsgsFound = []
+        fp = self.__openGrib(gribPath)
+
+        # check if nothing passed in and conditionally set params
+        if msgs is None:
+            msgs = self.MOI
+        if fields is None:
+            fields = self.FOI
+
+        # Find all matching messages (safety check to ensure messages we're trying to find actually exist)
+        # ValueError appended here if message isn't found in __getMessage function.
+        # This returns a 2d "list of lists"
+        for str in msgs:
+            gribMsgsFound.append( self.__getMessage(str, fp) )
+
+        # For each array of matching grib messages (1..*)
+        for gribMsgs in gribMsgsFound:
+            if gribMsgs is not ValueError:
+                # use the first name of 1..* in toReturn[name] as all names should all be the same
+                toReturn[gribMsgs[0].name] = self.__parseGribMsg(gribMsgs, latLons)
+
+        # At this point, all data for each message type should be organized in toReturn
+        return toReturn
+
+
 
     ## Returns a list of all matching messages found. Msgs can either be a
     #  single message type (ex. "Temperature") or it can be a list of messages
@@ -50,10 +98,11 @@ class Blender(object):
     #  @param msgs    single item (string) or array
     #  @return        returns an array of matches
     def getMessages(self, msgs, grib):
+        fp = self.__openGrib(grib)
         toReturn = []
         if type(msgs) == list:
             for msg in msgs:
-                matches = self.getMessage(msg, grib)
+                matches = self.__getMessage(msg, grib)
                 for match in matches:
                     toReturn.append(match)
             return toReturn
@@ -156,21 +205,17 @@ class Blender(object):
 
 
 # ---------------------------------------------- PRIVATE -------------------------------------------------
-    ## Gets the msg from grib.
+    ## Gets the message specified from grib.
+    # Note the grib should already by open when passing in.
     # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
-    # @return List of messages found
-    def __getMessage(self, msg, grib):
+    # @return **List** of messages found
+    def __getMessage(self, message, openGrib):
         try:
-            f = pygrib.open(grib)
-        except OSError as err:
-            print(err)
-            return err
-        try:
-            msgs = f.select(name="{0}".format(msg))
+            msg = openGrib.select(name="{0}".format(message))
         except ValueError as err:
-            print(err)
+            log.write.error(err)
             return err
-        return msgs
+        return msg
 
     ## Returns a radian representation of the degree number passed in.
     def __convertToRadians(self, degree_num):
@@ -181,12 +226,30 @@ class Blender(object):
         try:
             f = pygrib.open(file)
         except FileNotFoundError as err:
-            print("Error in blender::__openGrib - File Not found")
-            return
+            log.write.error("Error in blender::__openGrib - Grib file not found")
+            raise err
         return f
 
 
 
+    ## Parses data out of grib messages.
+    #  @return  Array of dictionaries, 1 for each gribMsg in gribMsgs corresponding to level
+    def __parseGribMsg(self, gribMsgs, latLons):
+        toReturn = []
+        levelData = {}
+
+        for msg in gribMsgs:
+            levelData["level"] = msg.level
+            levelData["units"] = msg.units
+
+            # TODO: figure out how to append to dataFound ' latLon : value ' Not sure what latLon is. Eventually this step will involve interpolated data
+            #for loc in latLons:
+            #    dataFound[loc] = gribMsg["values"][##somepoint##]
+
+            toReturn += levelData
+            levelData = {}
+
+        return toReturn
 
 
 

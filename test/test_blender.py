@@ -24,7 +24,7 @@ class TestBlender(unittest.TestCase):
         pass
 
     def test_get_messages_valid(self):
-        message = self.blender.getMessages('Temperature', self.gribFile)
+        message = self.blender.getMessagesStrings('Temperature', self.gribFile)
         self.assertIsInstance(message, list)
 
 
