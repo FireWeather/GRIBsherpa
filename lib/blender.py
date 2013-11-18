@@ -35,17 +35,6 @@ class Blender(object):
     FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
 
 
-    def getAllData(self, gribPath, messages, fields):
-        dataStruct = {}
-        gribFile = self.__openGrib(gribPath)
-
-        for msg in messages:
-            dataStruct[msg] =
-
-
-
-
-
     # TODO: clean up comments
     ## This is the work horse of the blender class.  It searches the grib for matching messages and returns a <??>
     #  of all data found for the matching fields.  If the msgs and fields params are left as None, the above
@@ -83,7 +72,7 @@ class Blender(object):
 
         # For each array of matching grib messages (1..*)
         for gribMsgs in gribMsgsFound:
-            if gribMsgs is not ValueError:
+            if type(gribMsgs) != ValueError:
                 # use the first name of 1..* in toReturn[name] as all names should all be the same
                 toReturn[gribMsgs[0].name] = self.__parseGribMsg(gribMsgs, latLons)
 
@@ -230,8 +219,6 @@ class Blender(object):
             raise err
         return f
 
-
-
     ## Parses data out of grib messages.
     #  @return  Array of dictionaries, 1 for each gribMsg in gribMsgs corresponding to level
     def __parseGribMsg(self, gribMsgs, latLons):
@@ -246,7 +233,7 @@ class Blender(object):
             #for loc in latLons:
             #    dataFound[loc] = gribMsg["values"][##somepoint##]
 
-            toReturn += levelData
+            toReturn.append(levelData)
             levelData = {}
 
         return toReturn
