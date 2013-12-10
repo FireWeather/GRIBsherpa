@@ -35,25 +35,35 @@ class Blender(object):
     FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
 
     ## Takes a path to the grib file to work with.  Tries to open it for subsequent work.
+    #  currentMsg is the message type that is currently being "worked" with.
     def __init__(self, pathToGrib):
         self.grib = self.__openGrib(pathToGrib)
 
-    ## Returns the date and time of the model run.
+    ## Returns the date and time of the model run for the first msg in the grib (they should all be the same).
     def modelRun(self):
-        return self.grib.dataDate, self.grib.dataTime
+        firstMsg = self.grib[1]
+        return firstMsg.dataDate, firstMsg.dataTime
 
-    ## Returns the forecast hour.
+    ## Returns the forecast hour for the first msg in the grib (they should all be the same).
     def forecastHour(self):
-        return self.grib.forecastTime
+        firstMsg = self.grib[1]
+        return firstMsg.forecastTime
 
-    ## Returns in order: attribute, attribute_unit, level, level_unit
-    # TODO: figure out if pressureUnits is right param
-    def metParams(self):
-        return self.grib.name, self.grib.units, self.grib.level, self.grib.pressureUnits
+    ## Finds the first matching msgType in the grib and returns in order: attribute, attribute_unit, level, level_unit
+    # TODO: figure out if pressureUnits is right param and if it's ok to return vals for the first msg of msgType (ie. is the first indicitive of the rest)
+    def metParams(self, msgType):
+        msg = self.__getMessage(msgType, self.grib)[0]
+        return msg.name, msg.units, msg.level, msg.pressureUnits
 
-    def values(self):
-        # Using Numpy ndarray method
-        return self.grib.values.flatten
+    ## Get's all (0...N) of specified msgType in grib and returns a dictionary of "<level> : <1darray of values>"
+    #  TODO: (eventually) modify this to return interpolated values vs. all values (which it's doing now)
+    def values(self, msgType):
+        toReturn = {}
+        msgs = self.__getMessage(msgType, self.grib)
+        for msg in msgs:
+            # Using Numpy ndarray method
+            toReturn[msg.level] = msg.values.flatten
+        return toReturn
 
 
 
@@ -149,6 +159,9 @@ class Blender(object):
 
     ## This wraps Pygrib.open in a try catch block.
     def __openGrib(self, file):
+        # This allows passing in of open grib (and therefore specific msg). This is for simplicity in grad project...
+        if type(file) == pygrib.open:
+            return file
         try:
             f = pygrib.open(file)
         except FileNotFoundError as err:
