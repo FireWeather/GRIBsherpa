@@ -13,15 +13,36 @@ import pygrib
 class TestBlender(unittest.TestCase):
 
     def setUp(self):
-        self.blender = lib.blender.Blender()
         self.gribFile = './grib.grib2'
         self.arr = [1,2,3,4,5]
         self.grib = pygrib.open(self.gribFile)
         self.temps = self.grib.select(name="Temperature")[0]
+        self.blender = lib.blender.Blender('./grib.grib2')
+
 
 
     def tearDown(self):
         pass
+
+    def test_modelRun(self):
+        mr = self.blender.modelRun()
+        self.assertIsInstance(mr["hour"], int)
+        self.assertIsInstance(mr["date"], int)
+
+    def test_forecastHour(self):
+        fh = self.blender.forecastHour()
+        self.assertIsInstance(fh["hour"], int)
+
+    def test_metParams(self):
+        p = self.blender.metParams("Geopotential Height")
+        self.assertIsInstance(p["attribute"], str)
+        self.assertIsInstance(p["attribute_units"], str)
+        self.assertIsInstance(p["level"], int)
+        self.assertIsInstance(p["level_units"], str)
+
+    def test_values(self):
+        v = self.blender.values("Geopotential Height")
+        assert(all(isinstance(x, int) for x in v.keys()))
 
     # def test_get_messages_valid(self):
     #     message = self.blender.getMessagesStrings('Temperature', self.gribFile)
@@ -51,9 +72,9 @@ class TestBlender(unittest.TestCase):
     #     val = self.blender.getValuesAtPoint(99.9999, 44.44444, self.temps, self.blender.iRectSphereBivariateSpline)
     #     print("\n" + str(val) + "\n")
 
-    def test_getSpecificData(self):
-        data = self.blender.getSpecificData("./testGrib.grib", None)
-        print(data)
+    # def test_getSpecificData(self):
+    #     data = self.blender.getSpecificData("./testGrib.grib", None)
+    #     print(data)
 
 
 

@@ -42,18 +42,19 @@ class Blender(object):
     ## Returns the date and time of the model run for the first msg in the grib (they should all be the same).
     def modelRun(self):
         firstMsg = self.grib[1]
-        return firstMsg.dataDate, firstMsg.dataTime
+        return {"date": firstMsg.dataDate, "hour": firstMsg.dataTime}
 
     ## Returns the forecast hour for the first msg in the grib (they should all be the same).
     def forecastHour(self):
         firstMsg = self.grib[1]
-        return firstMsg.forecastTime
+        return {"hour": firstMsg.forecastTime}
 
     ## Finds the first matching msgType in the grib and returns in order: attribute, attribute_unit, level, level_unit
     # TODO: figure out if pressureUnits is right param and if it's ok to return vals for the first msg of msgType (ie. is the first indicitive of the rest)
     def metParams(self, msgType):
         msg = self.__getMessage(msgType, self.grib)[0]
-        return msg.name, msg.units, msg.level, msg.pressureUnits
+        return {"attribute": msg.name, "attribute_units": msg.units,
+                "level": msg.level, "level_units": msg.pressureUnits}
 
     ## Get's all (0...N) of specified msgType in grib and returns a dictionary of "<level> : <1darray of values>"
     #  TODO: (eventually) modify this to return interpolated values vs. all values (which it's doing now)
