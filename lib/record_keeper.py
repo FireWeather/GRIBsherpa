@@ -74,6 +74,7 @@ class RecordKeeper:
         self.dbConnection.commit()
         cur.close()
 
+    #TODO: can this be made to insert data for all regions instead of just one? Should we have all regions in there?
     def insertGeoData(self, cde, region, grid=None):
         dictOfCSVData = cde.getCSVDict()
         assert(self.dbConnection is not None)
@@ -114,7 +115,7 @@ class RecordKeeper:
         self.dbConnection.commit();
         cur.close()
 
-
+    #TODO: Once posgGIS is working, remove this function and start using above version
     def insertGeoDataDummy(self, cde, region, grid=None):
         dictOfCSVData = cde.getCSVDict()
         assert(self.dbConnection is not None)
