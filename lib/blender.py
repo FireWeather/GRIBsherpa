@@ -22,18 +22,6 @@ import lib.logger as log
 # 3. Store in database
 class Blender(object):
 
-
-    ## "Message of Interest" These are the messages within the grib that we care about.
-    # These will each have many key/value pairs. The message format matches exactly the grib format.
-    # Note: for queries containing multiple heights, there will be several repeated (but different) messages for each height
-    # MP: Not finding -- precipital water -- its listing below is a best guess at the Message name/format.
-    MOI = ['Best (4-layer) lifted index', 'Convective available potential energy', 'Geopotential Height', 'Precipital water', 'Surface lifted index', 'Temperature', 'Relative humidity', 'Surface pressure',  'U component of wind', 'V component of wind', 'Wind speed']
-
-
-    ## "Fields of Interest" These are the fields contained within the messages (above) that we want to capture.
-    # Note that some of these fields (latitudes for example) will contain multiple values.
-    FOI = ['name', 'level', 'values', 'units', 'latitudes', 'longitudes', 'distinctLongitudes', 'distinctLatitudes']
-
     ## Takes a path to the grib file to work with.  Tries to open it for subsequent work.
     #  currentMsg is the message type that is currently being "worked" with.
     def __init__(self, pathToGrib):
@@ -53,7 +41,7 @@ class Blender(object):
         return {"hour": "'" + str(firstMsg.forecastTime) + " hours'"}
 
     ## Finds the first matching msgType in the grib and returns in order: attribute, attribute_unit, level, level_unit
-    # TODO: figure out if pressureUnits is right param and if it's ok to return vals for the first msg of msgType (ie. is the first indicitive of the rest)
+    # TODO: figure out if pressureUnits is right param
     def metParams(self, msgType):
         toReturn = {}
         msgs = self.__getMessage(msgType, self.grib)
