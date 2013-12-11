@@ -66,8 +66,3 @@ CREATE TABLE message_types (
     message_types_pkey SERIAL PRIMARY KEY,
     name text UNIQUE NOT NULL
 );
-
-CREATE TABLE field_types (
-    field_types_pkey SERIAL PRIMARY KEY,
-    name text UNIQUE NOT NULL
-);
