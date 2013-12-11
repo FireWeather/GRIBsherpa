@@ -8,6 +8,7 @@
 import psycopg2
 import lib.logger
 import socket
+import re
 
 ## This class manages all the database logic.  This includes connecting, logging, stored procedures, etc.
 #  It is expected to be called primarily to store data coming in from the blender class.  Best guess is that
@@ -48,8 +49,6 @@ class RecordKeeper:
 
 
     # ----------------------------------- Procedures ----------------------------------------
-    # My gut tells me that for now the best way to store our queries and insertions are as functions.
-    # This will make changes easier and allow flexibility early until we get our design nailed down.
 
     ## Used for inserting grid points
     #  Gets a cursor, executes stored proc based on params, closes cursor
@@ -116,6 +115,48 @@ class RecordKeeper:
         cur.close()
 
 
+    def insertGeoDataDummy(self, cde, region, grid=None):
+        dictOfCSVData = cde.getCSVDict()
+        assert(self.dbConnection is not None)
+        cur = self.dbConnection.cursor();
+
+        dummyIndex = 1
+        for i in dictOfCSVData:
+            SQL = "SELECT region_pkey FROM region WHERE region_abbv = 'NWCC';"
+            #data = region
+            cur.execute(SQL)
+            # print(cur.fetchall())
+            region_pkey = cur.fetchone()
+
+            pointDataLat = i.get('lat')
+            pointDataLon = i.get('long')
+
+            if grid is None:
+                SQL = "INSERT INTO model_grid_points (region_pkey, region_ref_number, national_ref_number, " \
+                      "location) VALUES (%s, %s, %s, %s);"
+
+                print(str(region_pkey) + ' ' + str(i.get('id')) + ' ' + str(self.index) + ' ' + str('POINT(' + pointDataLon + ' ' + pointDataLat + ')'))
+                data = (region_pkey, i.get('id'), self.index, dummyIndex)
+                dummyIndex += 1
+            else:
+                SQL = "INSERT INTO model_grid_points (region_pkey, region_ref_number, national_ref_number, " \
+                      "location, regional_grid) VALUES (%s, %s, %s, ST_GeographyFromText(%s), %s);"
+
+                print(str(region_pkey))
+                print(str(i.get('id')))
+                print(str(self.index))
+                print(str('POINT(' + pointDataLon + ' ' + pointDataLat + ')'))
+                print(str(grid))
+                print(str(region_pkey) + ' ' + str(i.get('id')) + ' ' + str(self.index) + ' ' + str('POINT(' + pointDataLon + ' ' + pointDataLat + ')') + ' ' + str(grid))
+                print('\n')
+                data = (region_pkey, i.get('id'), self.index, 'POINT(' + pointDataLon + ' ' + pointDataLat + ')', grid, )
+
+            cur.execute(SQL, data)
+            self.index += 1
+
+        self.dbConnection.commit();
+        cur.close()
+
     ## This is used for inserting "general" data.
     #  tableName    string - the name of the table
     #  columns      array[string] - column names
@@ -128,21 +169,45 @@ class RecordKeeper:
         assert(self.dbConnection is not None)
         cur = self.dbConnection.cursor()
 
-        # build sql string from params
+        # build sql string from params. the column predicate works here because column names duplicates can't exist
         for i in columns:
             if i == columns[-1]:
-                sql += i + ") VALUES "
+                sql += i + ") VALUES ("
             else:
                 sql += i + ", "
         for i in values:
-            if i == values[-1]:
-                sql += i + ");"
-            else:
-                sql += i + ", "
+            sql += self.__singleParens(i) + ", "
+        # Once the string is build, strip off extra comma and whitespace and add closing parens. We have to do it this
+        # way vs. the column predicate way as above because duplicate values may exist (and are allowed).
+        sql = sql[0:-2] + ");"
 
-        cur.execute(sql)
+        # Execute and catches errors, logging and moving on. This is primarily for duplicate entry attempts.
+        try:
+            cur.execute(sql)
+        except Exception as e:
+            self.log.write.error("In RecordKeeper: error while inserting - " + str(e))
+            print(str(e))
+            cur.close()
+
         self.dbConnection.commit()
         cur.close()
+
+
+    def sql(self, sql):
+        optionalReturn = None
+        assert(self.dbConnection is not None)
+        cur = self.dbConnection.cursor()
+
+        try:
+            cur.execute(sql)
+            if sql.find("INSERT INTO") < 0:
+                optionalReturn = cur.fetchall()
+        except Exception as e:
+            self.log.write.error("In RecordKeeper: error while inserting manually - " + str(e))
+            print(str(e))
+        self.dbConnection.commit()
+        cur.close()
+        return optionalReturn
 
 
     # -------------------------------- Private -------------------------------------
@@ -153,3 +218,12 @@ class RecordKeeper:
         ipAddress = socket.gethostbyname(socket.gethostname())
         self.log.write.info("In RecordKeeper, IP address is: " + str(ipAddress))
         return connection_string + " host=" + str(ipAddress)
+
+    ## This assists with building SQL strings from user input. It transforms the object being passed in
+    #  into a string and verifies that it is enclosed in single quotes.
+    def __singleParens(self, intOrStr):
+        toRet = str(intOrStr)
+        if re.match('^\'.*\'$', toRet) is not None:
+            return toRet
+        else:
+            return "'" + toRet + "'"
