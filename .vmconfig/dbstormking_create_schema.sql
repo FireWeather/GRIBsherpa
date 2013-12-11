@@ -9,20 +9,23 @@
 CREATE EXTENSION postgis;
 
 CREATE TABLE model_run (
-  model_run_date date NOT NULL, 
-  model_run_time timetz NOT NULL, 
-  model_run_pkey SERIAL PRIMARY KEY
+  model_run_date date NOT NULL,
+  model_run_time timetz NOT NULL,
+  model_run_pkey SERIAL PRIMARY KEY,
+  UNIQUE (model_run_date, model_run_time)
 );
 
 CREATE TABLE forecast_hour (
-  forecast_hour interval NOT NULL, 
-  forecast_hour_pkey SERIAL PRIMARY KEY
+  forecast_hour interval NOT NULL,
+  forecast_hour_pkey SERIAL PRIMARY KEY,
+  UNIQUE (forecast_hour)
 );
 
 CREATE TABLE model_forecast_relation (
   model_run_pkey integer NOT NULL REFERENCES model_run (model_run_pkey),
   forecast_hour_pkey integer NOT NULL REFERENCES forecast_hour (forecast_hour_pkey),
-  model_forecast_relation_pkey SERIAL PRIMARY KEY
+  model_forecast_relation_pkey SERIAL PRIMARY KEY,
+  UNIQUE (model_run_pkey, forecast_hour_pkey)
 );
 
 CREATE TABLE met_param (
