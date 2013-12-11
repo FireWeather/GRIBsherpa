@@ -26,12 +26,12 @@ class TestBlender(unittest.TestCase):
 
     def test_modelRun(self):
         mr = self.blender.modelRun()
-        self.assertIsInstance(mr["hour"], int)
-        self.assertIsInstance(mr["date"], int)
+        self.assertIsInstance(mr["hour"], str)
+        self.assertIsInstance(mr["date"], str)
 
     def test_forecastHour(self):
         fh = self.blender.forecastHour()
-        self.assertIsInstance(fh["hour"], int)
+        self.assertIsInstance(fh["hour"], str)
 
     def test_metParams(self):
         p = self.blender.metParams("Geopotential Height")

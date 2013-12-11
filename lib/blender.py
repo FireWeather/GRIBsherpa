@@ -40,21 +40,27 @@ class Blender(object):
         self.grib = self.__openGrib(pathToGrib)
 
     ## Returns the date and time of the model run for the first msg in the grib (they should all be the same).
+    #  Returns date and hour in format needed for SQL conversion (to date and time with single quotes)
     def modelRun(self):
         firstMsg = self.grib[1]
-        return {"date": firstMsg.dataDate, "hour": firstMsg.dataTime}
+        date = "'" + str(firstMsg.year) + "-" + self.__formatDate(firstMsg.month) + "-" + self.__formatDate(firstMsg.day) + "'"
+        hour = "'" + self.__formatTime(firstMsg.dataTime) + "'"
+        return {"date": date, "hour": hour}
 
     ## Returns the forecast hour for the first msg in the grib (they should all be the same).
     def forecastHour(self):
         firstMsg = self.grib[1]
-        return {"hour": firstMsg.forecastTime}
+        return {"hour": "'" + str(firstMsg.forecastTime) + " hours'"}
 
     ## Finds the first matching msgType in the grib and returns in order: attribute, attribute_unit, level, level_unit
     # TODO: figure out if pressureUnits is right param and if it's ok to return vals for the first msg of msgType (ie. is the first indicitive of the rest)
     def metParams(self, msgType):
-        msg = self.__getMessage(msgType, self.grib)[0]
-        return {"attribute": msg.name, "attribute_units": msg.units,
-                "level": msg.level, "level_units": msg.pressureUnits}
+        toReturn = {}
+        msgs = self.__getMessage(msgType, self.grib)
+        for msg in msgs:
+            toReturn[msg.level] = {"attribute": "'" + msg.name + "'", "attribute_unit": "'" + msg.units + "'",
+                                   "level": "'" + str(msg.level) + "'", "level_unit": "'" + msg.pressureUnits + "'"}
+        return toReturn
 
     ## Get's all (0...N) of specified msgType in grib and returns a dictionary of "<level> : <1darray of values>"
     #  TODO: (eventually) modify this to return interpolated values vs. all values (which it's doing now)
@@ -63,7 +69,7 @@ class Blender(object):
         msgs = self.__getMessage(msgType, self.grib)
         for msg in msgs:
             # Using Numpy ndarray method
-            toReturn[msg.level] = msg.values.flatten
+            toReturn[msg.level] = msg.values.flatten().tolist()
         return toReturn
 
 
@@ -142,6 +148,25 @@ class Blender(object):
 
 
 # ---------------------------------------------- PRIVATE -------------------------------------------------
+    ## Formats single digits to be two digit format which Postgres can convert (SQL standard).
+    def __formatDate(self, num):
+        if num == 0:
+            return "00"
+        elif num < 10:
+            return "0" + str(num)
+        else:
+            return str(num)
+
+    ## Formats basic time in "int" to time format Postgres can convert (SQL standard).
+    def __formatTime(self, time):
+        t = str(time)
+        if time == 0:
+            return "00:00:00"
+        elif time < 1000:
+            return "0" + t[0] + ":00:00"
+        else:
+            return t[0:2] + ":00:00"
+
     ## Gets the message specified from grib.
     # Note the grib should already by open when passing in.
     # @return Error (OSError or ValueError) if grib not found or msg doesn't exist in grib
@@ -169,6 +194,8 @@ class Blender(object):
             log.write.error("Error in blender::__openGrib - Grib file not found")
             raise err
         return f
+
+
 
 
 
