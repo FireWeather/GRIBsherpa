@@ -33,7 +33,8 @@ CREATE TABLE met_param (
   level_unit text NOT NULL, 
   attribute text NOT NULL, 
   attribute_unit text NOT NULL, 
-  met_param_pkey SERIAL PRIMARY KEY
+  met_param_pkey SERIAL PRIMARY KEY,
+  UNIQUE (level, attribute)
 );
 
 CREATE TABLE region (
@@ -50,7 +51,7 @@ CREATE TABLE model_grid_points (
   region_ref_number smallint NOT NULL, 
   regional_grid text,
   national_ref_number smallint UNIQUE, 
-  location geography(POINT,4326)
+  location bigint -- TODO replace "bigint" with "geography(POINT,4326)"
 );
 
 CREATE TABLE met_data ( 
