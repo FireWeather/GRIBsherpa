@@ -19,11 +19,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    config.vm.network :forwarded_port, guest: 5432, host: 5432, auto_correct: true
   
   # Every Vagrant virtual environment requires a box to build off of.
-   config.vm.box = "grib-test-01"
+   config.vm.box = "grib-test-02"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-   config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/raring/current/raring-server-cloudimg-amd64-vagrant-disk1.box"
+   config.vm.box_url = "http://www.tw5000.net/grib-vagrant-rev-0.2.box"
 
    config.vm.hostname = "owyhee"
   # Create a forwarded port mapping which allows access to a specific port
@@ -39,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Bridged networks make the machine appear as another physical device on
   # your network.
   #config.vm.network :public_network, :bridge => 'eth0' 
-   config.vm.network :public_network, :bridge => 'wlp3s0' 
+  #config.vm.network :public_network, :bridge => 'wlp3s0' 
 
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false
@@ -59,7 +59,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
    config.vm.synced_folder "../test/", "/grib/test/"
    config.vm.synced_folder "../log/", "/grib/log/"
 
-   config.vm.provision :shell, :path => "bootstrap.sh"
+  # config.vm.provision :shell, :path => "bootstrap.sh"
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
