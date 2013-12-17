@@ -5,5 +5,5 @@
 -- of this software for license terms.
 -- --------------------------------------------------------
 
-CREATE DATABASE stormking OWNER susherpa;
-GRANT ALL PRIVILEGES ON DATABASE stormking to susherpa;
+CREATE DATABASE stormking OWNER vagrant;
+GRANT ALL PRIVILEGES ON DATABASE stormking to vagrant;
