@@ -9,7 +9,7 @@ import lib.csv_data_extraction as cde
 
 
 # Prep db connection
-db = rc.RecordKeeper("dbname=stormking user=susherpa password=susherpa")
+db = rc.RecordKeeper("dbname=stormking user=vagrant password=vagrant")
 db.openDbConnection()
 
 
