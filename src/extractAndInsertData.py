@@ -35,7 +35,7 @@ print("Data extraction complete in: " + str(t2 - t1) + "millis")
 # --------------------------- Data Insertion --------------------------
 t1 = current_time_millis()
 
-db = rc.RecordKeeper("dbname=stormking user=susherpa password=susherpa")
+db = rc.RecordKeeper("dbname=stormking user=vagrant password=vagrant")
 db.openDbConnection()
 
 
