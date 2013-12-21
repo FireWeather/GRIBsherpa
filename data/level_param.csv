@@ -1,0 +1,6 @@
+level,level_unit,level_web
+1000,hPa,lev_1000_mb=on
+850,hPa,lev_850_mb=on
+700,hPa,lev_700_mb=on
+500,hPa,lev_500_mb=on
+,,lev_entire_atmosphere_%5C%28considered_as_a_single_layer%5C%29=on
