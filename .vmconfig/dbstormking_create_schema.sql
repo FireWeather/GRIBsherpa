@@ -29,7 +29,7 @@ CREATE TABLE model_forecast_relation (
 );
 
 CREATE TABLE level_param (
-  level smallint NOT NULL UNIQUE,
+  level text NOT NULL UNIQUE,
   level_unit text NOT NULL,
   level_web text NOT NULL UNIQUE,
   level_param_pkey SERIAL PRIMARY KEY
