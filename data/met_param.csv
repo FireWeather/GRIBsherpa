@@ -1,0 +1,24 @@
+Temperature,1000
+Temperature,850
+Temperature,700
+Temperature,500
+Relative humidity,1000
+Relative humidity,850
+Relative humidity,700
+Relative humidity,500
+U component of wind,1000
+U component of wind,850
+U component of wind,700
+U component of wind,500
+V component of wind,1000
+V component of wind,850
+V component of wind,700
+V component of wind,500
+Geopotential Height,1000
+Geopotential Height,850
+Geopotential Height,700
+Geopotential Height,500
+Convective available potential energy,0
+Surface lifted index,0
+Pressure reduced to MSL,0
+Precipitable water,entire atmosphere (considered as a single layer)

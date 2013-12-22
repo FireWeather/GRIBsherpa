@@ -1,1 +1,10 @@
-attribute,attribute_unit,attribute_web
+attribute	attribute_unit	attribute_web
+Precipitable water	kg m**-2	
+Geopotential Height	gpm	HGT
+U component of wind	m s**-1	U GRD
+V component of wind	m s**-1	V GRD
+Convective available potential energy	J kg**-1	CAPE
+Temperature	K	
+Surface lifted index	K	LFTX
+Relative humidity	%	
+Pressure reduced to MSL	Pa	PRMSL
