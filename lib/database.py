@@ -12,22 +12,23 @@ import socket
 import sys
 
 
-class Database(object):
+class Database:
 
     def __init__(self, db_name=None, db_user=None, db_password=None):
-        if db_name is not None and db_user is not None and db_password is not None:
-            self.setup_connection(db_name, db_user, db_password)
 
-    def setup_connection(self, db_name, db_user, db_password):
-        self.connection_string = ""
-        self.connection_string += self.__append_string("dbname=", db_name)
-        self.connection_string += self.__append_string("user=", db_user)
-        self.connection_string += self.__append_string("password=", db_password)
-        self.connection_string += self.__append_string("host=", str(socket.gethostbyname(socket.gethostname() ) ) )
+        connection_string = "dbname=" + db_name
+        connection_string += " user=" + db_user
+        connection_string += " password=" + db_password
+        connection_string += " host=" + str(socket.gethostbyname(socket.gethostname()))
+
+        self.connection_string = connection_string
+        self.open_connection()
 
     def open_connection(self):
         try:
-            self.db_connection = psycopg2.connect(self.connection_string)
+            db_connection = psycopg2.connect(self.connection_string)
+            self.db_connection = db_connection
+
         except psycopg2.OperationalError as err:
             sys.stderr.write("Error opening the db connection with: " + str(self.connection_string) +
                              ", The error received was: " + str(err))
@@ -35,12 +36,32 @@ class Database(object):
 
     def close_connection(self):
         if self.db_connection is None:
-            sys.stderr.write("No connection to close")
+            sys.stderr.write("No existing connection to close")
             return
         else:
             self.db_connection.close()
 
-    def __append_string(self, key, value):
-        return key + value + " "
+    def get_cursor(self):
+        if self.db_connection is None:
+            print("No existing connection to attain cursor")
+            return
+
+        connection = self.db_connection
+
+        return
+
+    def populate_simple(self, full_table_name, file_handle, headers):
+        if self.db_connection is None:
+            self.open_connection()
+
+        cursor = self.db_connection.cursor()
+        cursor.copy_from(file_handle, full_table_name, sep=',', columns=headers)
+
+        self.db_connection.commit()
+
+
+
+def append_string(key, value):
+    return str(key + value + " ")
 
 
