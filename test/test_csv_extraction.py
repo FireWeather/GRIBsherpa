@@ -13,7 +13,7 @@ from lib.csv_data_extraction import CsvDataExtraction
 class TestCsvDataExtraction(unittest.TestCase):
 
     def setUp(self):
-        file = 'data/regions.csv'
+        file = 'data/region.csv'
         self.csvExtractor = CsvDataExtraction(file)
 
     def tearDown(self):

@@ -13,7 +13,7 @@ from lib.record_keeper import RecordKeeper
 from lib.csv_data_extraction import CsvDataExtraction
 
 pathToGridPoints = 'data/latlon/csv/'
-pathToRegionsData = 'data/regions.csv'
+pathToRegionsData = 'data/region.csv'
 
 cde = CsvDataExtraction(pathToRegionsData)
 

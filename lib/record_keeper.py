@@ -64,7 +64,7 @@ class RecordKeeper:
     def insertRegionData(self, cde):
         dictOfCSVData = cde.getCSVDict()
         assert(self.dbConnection is not None)
-        cur = self.dbConnection.cursor();
+        cur = self.dbConnection.cursor()
 
         for i in dictOfCSVData:
             SQL = "INSERT INTO region (region_name, region_abbv, fs_region_num) VALUES (%s, %s, %s);"

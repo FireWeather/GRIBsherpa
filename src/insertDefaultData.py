@@ -15,7 +15,7 @@ db.openDbConnection()
 
 # ------------------------------------- Insert Region and Geo Data -------------------------------------
 # Get csv data dictionaries for regions and geo data
-regionDict = cde.CsvDataExtraction('/grib/data/regions.csv')
+regionDict = cde.CsvDataExtraction('/grib/data/region.csv')
 geoDict = cde.CsvDataExtraction('/grib/data/latlon/csv/NWCC_lg_grid.csv')
 
 # Insert region data

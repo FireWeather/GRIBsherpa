@@ -8,16 +8,15 @@ import os
 import csv
 
 
-class CsvDataExtraction(object):
+class CsvDataExtraction:
 
-    def __init__(self, filename):
-        self.filename = filename
+    @staticmethod
+    def get_CsvDict(filename):
+        filename = filename
         if not os.path.isfile(filename):
-            print('file \'' + filename +'\' does not exist')
+            print('file \'' + filename + '\' does not exist')
             exit(1)
-        temp = open(self.filename)
-        self.dict = csv.DictReader(temp)
-        # temp.close()
+        temp = open(filename)
+        csv_dict_reader = csv.DictReader(temp)
 
-    def getCSVDict(self):
-        return self.dict
+        return csv_dict_reader
